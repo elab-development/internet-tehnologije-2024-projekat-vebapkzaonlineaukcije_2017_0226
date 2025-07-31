@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('cache');
-        Schema::dropIfExists('cache_locks');
+        //Schema::dropIfExists('cache');
+        //Schema::dropIfExists('cache_locks');
         Schema::dropIfExists('failed_jobs');
         Schema::dropIfExists('jobs');
         Schema::dropIfExists('job_batches');
@@ -42,17 +42,17 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->mediumText('value');
-            $table->integer('expiration');
-        });
+       // Schema::create('cache', function (Blueprint $table) {
+        //    $table->string('key')->primary();
+        //    $table->mediumText('value');
+        //    $table->integer('expiration');
+       // });
 
-        Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->string('owner');
-            $table->integer('expiration');
-        });
+       // Schema::create('cache_locks', function (Blueprint $table) {
+        //    $table->string('key')->primary();
+        //    $table->string('owner');
+        //    $table->integer('expiration');
+       // });
 
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();

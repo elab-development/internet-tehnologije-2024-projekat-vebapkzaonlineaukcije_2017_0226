@@ -3,9 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ponuda extends Model
 {
+    use HasFactory;
+    protected $table = 'ponuda';
+
+    protected $fillable = [
+        'iznos',
+        'vremePonude',
+        'aukcijaID',
+        'korisnikID',
+        
+    ];
     public function aukcija()
     {
         return $this->belongsTo(Aukcija::class, 'aukcijaID');

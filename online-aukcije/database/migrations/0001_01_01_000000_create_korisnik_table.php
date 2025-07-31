@@ -11,14 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('aukcija', function (Blueprint $table) {
+        Schema::create('korisnik', function (Blueprint $table) {
             $table->id();
-            $table->integer('pocetnaCena');
-            $table->integer('trenutnaCena');
-            $table->timestamp('datumPocetka');
-            $table->string('statusAukcije');
+            $table->string('ime');
+            $table->string('prezime');
+            $table->string('email')->unique();
+            $table->string('lozinka');
+            $table->string('brojTelefona');
+            $table->string('adresa');
+            $table->integer('stanjeNaRacunu');
             $table->timestamps();
         });
+
+        
     }
 
     /**
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('aukcija');
+        Schema::dropIfExists('korisnik');
     }
 };

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('iznos');
             $table->timestamp('vremePonude');
+            $table->timestamps();
         });
     }
 
