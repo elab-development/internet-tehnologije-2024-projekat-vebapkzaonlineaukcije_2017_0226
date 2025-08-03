@@ -24,7 +24,7 @@ class AukcijaAPIController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'pocetnaCena' => 'required|numeric|min:10',
-            'datumPocetka' => 'required|date',
+            'datumPocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
         ]);
 
         if ($validator->fails()) {
@@ -95,5 +95,36 @@ class AukcijaAPIController extends Controller
             'success' => true,
             'message' => 'Aukcija uspešno obrisana.'
         ], 204); // No Content
+    }
+
+    public function pretragaPoKategoriji(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'kategorija' => 'required|string|max:255', 
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Greška pri validaciji parametra za kategoriju.',
+                'errors' => $validator->errors()
+            ], 400); // Bad Request
+        }
+
+        $nazivKategorije = $request->input('kategorija');
+
+        $aukcije = Aukcija::whereHas('proizvodi', function ($query) use ($nazivKategorije) {
+            $query->where('kategorija', $nazivKategorije);
+        })->get();
+
+        if ($aukcije->isEmpty()) {
+            return response()->json([
+                'success' => true, 
+                'message' => 'Nema aukcija sa proizvodima u kategoriji "' . $nazivKategorije . '".',
+                'data' => []
+            ], 200); // OK
+        }
+
+        return AukcijaResource::collection($aukcije);
     }
 }

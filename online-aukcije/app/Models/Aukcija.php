@@ -16,6 +16,13 @@ class Aukcija extends Model
         'datumPocetka',
         'statusAukcije'
     ];
+
+    protected $casts = [
+        'datumPocetka' => 'datetime', // Reci Laravelu da je ovo datum/vreme
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function ponude()
     {
         return $this->hasMany(Ponuda::class, 'aukcijaID');

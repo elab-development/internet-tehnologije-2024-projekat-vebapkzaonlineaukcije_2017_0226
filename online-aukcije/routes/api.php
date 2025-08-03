@@ -6,10 +6,13 @@ use App\Http\Controllers\AukcijaAPIController;
 use App\Http\Controllers\PonudaAPIController;
 use App\Http\Controllers\ProizvodAPIController;
 
-
-Route::apiResource('aukcije', AukcijaAPIController::class);
+Route::get('aukcije/pretraga-po-kategoriji', [AukcijaAPIController::class, 'pretragaPoKategoriji']);
 
 Route::post('aukcije/{aukcija}/ponudi', [PonudaAPIController::class, 'postaviPonudu']);
 
 Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class);
+
+Route::apiResource('aukcije', AukcijaAPIController::class);
+
+
 

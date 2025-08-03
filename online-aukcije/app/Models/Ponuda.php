@@ -17,6 +17,13 @@ class Ponuda extends Model
         'korisnikID',
         
     ];
+
+    protected $casts = [
+        'vremePonude' => 'datetime', // 
+        'created_at' => 'datetime',  // 
+        'updated_at' => 'datetime',  // 
+    ];
+
     public function aukcija()
     {
         return $this->belongsTo(Aukcija::class, 'aukcijaID');
