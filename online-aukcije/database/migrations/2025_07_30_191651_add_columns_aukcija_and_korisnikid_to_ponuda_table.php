@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('ponuda', function (Blueprint $table) {
             
-            $table->foreignId('aukcijaID')->constrained('aukcija')->onDelete('cascade');
-            $table->foreignId('korisnikID')->constrained('korisnik')->onDelete('cascade');
+            $table->foreignId('aukcija_id')->constrained('aukcija')->onDelete('cascade');
+            $table->foreignId('korisnik_id')->constrained('korisnik')->onDelete('cascade');
         });
     }
 
@@ -24,8 +24,8 @@ return new class extends Migration
     public function down(): void
     {
        Schema::table('ponuda', function (Blueprint $table) {
-            $table->dropForeign(['aukcijaID']);
-            $table->dropForeign(['korisnikID']);
+            $table->dropForeign(['aukcija_id']);
+            $table->dropForeign(['korisnik_id']);
         });
     }
 };

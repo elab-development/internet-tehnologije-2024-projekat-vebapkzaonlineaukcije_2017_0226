@@ -20,10 +20,10 @@ class ProizvodResource extends JsonResource
             'opis' => $this->opis,
             'kategorija' => $this->kategorija,
             'stanje' => $this->stanje,
-            'slikaURL' => $this->slikaURL,
+            'slika_url' => $this->slika_url,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'aukcijaID' => $this->aukcijaID
+            'aukcija_id' => $this->aukcija_id
         ];
     }
 }

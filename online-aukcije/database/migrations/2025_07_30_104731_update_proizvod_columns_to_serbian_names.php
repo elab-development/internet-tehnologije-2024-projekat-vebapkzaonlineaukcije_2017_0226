@@ -16,7 +16,7 @@ return new class extends Migration
             $table->renameColumn('description', 'opis');
             $table->renameColumn('category', 'kategorija');
             $table->renameColumn('state', 'stanje');
-            $table->renameColumn('pictureURL', 'slikaURL');
+            $table->renameColumn('pictureURL', 'slika_url');
         });
     }
 
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->renameColumn('opis', 'description');
             $table->renameColumn('kategorija', 'category');
             $table->renameColumn('stanje', 'state');
-            $table->renameColumn('slikaURL', 'pictureURL');
+            $table->renameColumn('slika_url', 'pictureURL');
         });
     }
 };

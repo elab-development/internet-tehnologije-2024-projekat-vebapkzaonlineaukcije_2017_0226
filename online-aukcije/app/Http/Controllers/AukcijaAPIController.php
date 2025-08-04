@@ -23,8 +23,8 @@ class AukcijaAPIController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'pocetnaCena' => 'required|numeric|min:10',
-            'datumPocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'pocetna_cena' => 'required|numeric|min:10',
+            'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
         ]);
 
         if ($validator->fails()) {
@@ -35,8 +35,8 @@ class AukcijaAPIController extends Controller
             ], 400); // Bad Request
         }
 
-        $request->merge(['trenutnaCena' => $request->input('trenutnaCena', $request->pocetnaCena)]);
-        $request->merge(['statusAukcije' => $request->input('statusAukcije', 'predstojeca')]);
+        $request->merge(['trenutna_cena' => $request->input('trenutna_cena', $request->pocetna_cena)]);
+        $request->merge(['status_aukcije' => $request->input('status_aukcije', 'predstojeca')]);
 
 
         $aukcija = Aukcija::create($request->all());
@@ -62,9 +62,9 @@ class AukcijaAPIController extends Controller
     public function update(Request $request, Aukcija $aukcija)
     {
         $validator = Validator::make($request->all(), [
-            'pocetnaCena' => 'sometimes|required|numeric|min:10',
-            'trenutnaCena' => 'sometimes|required|numeric|min:10|gte:pocetnaCena',
-            'datumPocetka' => 'sometimes|required|date',
+            'pocetna_cena' => 'sometimes|required|numeric|min:10',
+            'trenutna_cena' => 'sometimes|required|numeric|min:10|gte:pocetna_cena',
+            'datum_pocetka' => 'sometimes|required|date',
         ]);
 
         if ($validator->fails()) {
@@ -116,6 +116,8 @@ class AukcijaAPIController extends Controller
         $aukcije = Aukcija::whereHas('proizvodi', function ($query) use ($nazivKategorije) {
             $query->where('kategorija', $nazivKategorije);
         })->get();
+
+        $nazivKategorije = $request->input('kategorija');      
 
         if ($aukcije->isEmpty()) {
             return response()->json([

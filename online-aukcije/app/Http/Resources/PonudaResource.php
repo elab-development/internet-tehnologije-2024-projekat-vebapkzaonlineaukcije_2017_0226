@@ -17,11 +17,11 @@ class PonudaResource extends JsonResource
         return [
             'id' => $this->id,
             'iznos' => $this->iznos,
-            'vremePonude' => $this->vremePonude->format('Y-m-d H:i:s'),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'aukcijaID' => $this->aukcijaID,
-            'korisnikID' =>$this->korisnikID
+            'vreme_ponude' => $this->vreme_ponude?->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'aukcija_id' => $this->aukcija_id,
+            'korisnik_id' =>$this->korisnik_id
         ];
     }
 }

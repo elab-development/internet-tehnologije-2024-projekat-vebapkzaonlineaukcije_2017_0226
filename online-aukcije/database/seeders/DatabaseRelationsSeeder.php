@@ -28,7 +28,7 @@ class DatabaseRelationsSeeder extends Seeder
 
         $aukcije->each(function ($aukcija) use ($korisnici) {
             Proizvod::factory()->count($this->faker->numberBetween(1, 3))->create([
-                'aukcijaID' => $aukcija->id,
+                'aukcija_id' => $aukcija->id,
             ]);
             $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeni proizvodi.");
 
@@ -37,13 +37,13 @@ class DatabaseRelationsSeeder extends Seeder
                 $randomKorisnik = $korisnici->random(); 
                 
                 $ponuda = Ponuda::factory()->forAukcija($aukcija)->create([
-                    'korisnikID' => $randomKorisnik->id,
+                    'korisnik_id' => $randomKorisnik->id,
                 ]);
 
-                $aukcija->trenutnaCena = $ponuda->iznos;
+                $aukcija->trenutna_cena = $ponuda->iznos;
                 $aukcija->save();
             }
-            $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeno {$ponudaCount} ponuda. Finalna cena: {$aukcija->trenutnaCena}.");
+            $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeno {$ponudaCount} ponuda. Finalna cena: {$aukcija->trenutna_cena}.");
         });
 
         $this->command->info('Svi podaci uspešno generisani i povezani!');

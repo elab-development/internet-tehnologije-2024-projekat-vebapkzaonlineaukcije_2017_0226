@@ -15,11 +15,11 @@ class Proizvod extends Model
         'opis',
         'kategorija',
         'stanje',
-        'slikaURL',
-        'aukcijaID'
+        'slika_url',
+        'aukcija_id'
     ];
     public function aukcija()
     {
-        return $this->belongsTo(Aukcija::class, 'aukcijaID');
+        return $this->belongsTo(Aukcija::class, 'aukcija_id');
     }
 }

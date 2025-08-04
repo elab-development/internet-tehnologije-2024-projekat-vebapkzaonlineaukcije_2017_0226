@@ -12,25 +12,25 @@ class Ponuda extends Model
 
     protected $fillable = [
         'iznos',
-        'vremePonude',
-        'aukcijaID',
-        'korisnikID',
+        'vreme_ponude',
+        'aukcija_id',
+        'korisnik_id',
         
     ];
 
     protected $casts = [
-        'vremePonude' => 'datetime', // 
+        'vreme_ponude' => 'datetime', // 
         'created_at' => 'datetime',  // 
         'updated_at' => 'datetime',  // 
     ];
 
     public function aukcija()
     {
-        return $this->belongsTo(Aukcija::class, 'aukcijaID');
+        return $this->belongsTo(Aukcija::class, 'aukcija_id');
     }
 
     public function korisnik()
     {
-        return $this->belongsTo(Korisnik::class, 'korisnikID');
+        return $this->belongsTo(Korisnik::class, 'korisnik_id');
     }
 }

@@ -32,8 +32,8 @@ class ProizvodFactory extends Factory
             'stanje' => $this->faker->randomElement([
                 'novo','kao novo','korisceno','osteceno'     
             ]),
-            'slikaURL' => $this->faker->imageUrl(640, 480, 'products', true),
-            'aukcijaID' => Aukcija::factory()
+            'slika_url' => $this->faker->imageUrl(640, 480, 'products', true),
+            'aukcija_id' => Aukcija::factory()
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Ponuda;
-use App\Models\Aukcija; // Moramo da uvezemo Aukcija jer je koristimo u callbacku
+use App\Models\Aukcija;
 use App\Models\Korisnik;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -21,17 +21,15 @@ class PonudaFactory extends Factory
      */
     public function definition(): array
     {
-        $aukcija = Aukcija::factory()->create(); // Kreira aukciju za ovu ponudu
-        $startDate = Carbon::parse($aukcija->datumPocetka);
-        // Simulira trajanje aukcije od 15 do 60 minuta od početka
+        $aukcija = Aukcija::factory()->create();
+        $startDate = $aukcija->datum_pocetka ? Carbon::parse($aukcija->datum_pocetka) : Carbon::now();
         $endDate = $startDate->copy()->addMinutes($this->faker->numberBetween(15, 60));
 
         return [
-            // Ispravljena metoda za 'iznos'
-            'iznos' => $this->faker->numberBetween(10, 500000), // Primer: iznos između 10 i 500.000
-            'vremePonude' => $this->faker->dateTimeBetween($startDate, $endDate),
-            'aukcijaID' => $aukcija->id,
-            'korisnikID' => Korisnik::factory(), // Kreira korisnika za ponudu
+            'iznos' => $this->faker->numberBetween(10, 500000),
+            'vreme_ponude' => $this->faker->dateTimeBetween($startDate, $endDate),
+            'aukcija_id' => $aukcija->id,
+            'korisnik_id' => Korisnik::factory(),
         ];
     }
 
@@ -41,15 +39,14 @@ class PonudaFactory extends Factory
     public function forAukcija(Aukcija $aukcija): static
     {
         return $this->state(function (array $attributes) use ($aukcija) {
-            $startDate = Carbon::parse($aukcija->datumPocetka);
-            // Simulira trajanje za ovu konkretnu aukciju
+            $startDate = Carbon::parse($aukcija->datum_pocetka);
             $endDate = $startDate->copy()->addMinutes($this->faker->numberBetween(15, 60));
 
             return [
-                'aukcijaID' => $aukcija->id,
-                'vremePonude' => $this->faker->dateTimeBetween($startDate, $endDate),
+                'aukcija_id' => $aukcija->id,
+                'vreme_ponude' => $this->faker->dateTimeBetween($startDate, $endDate),
                 // Iznos ponude je veći od trenutne cene aukcije
-                'iznos' => $this->faker->numberBetween($aukcija->trenutnaCena + 1, $aukcija->trenutnaCena + 1000),
+                'iznos' => $this->faker->numberBetween($aukcija->trenutna_cena + 1, $aukcija->trenutna_cena + 1000),
             ];
         });
     }

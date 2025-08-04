@@ -7,55 +7,62 @@ use Illuminate\Http\Request;
 use App\Models\Aukcija;
 use App\Http\Resources\PonudaResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PonudaAPIController extends Controller
 {
 
     public function postaviPonudu(Request $request, Aukcija $aukcija)
     {
-        
-        $najvisaPonuda = $aukcija->trenutnaCena;
 
         $validator = Validator::make($request->all(), [
-            'iznos' => 'required|numeric|min:' . ($najvisaPonuda + 10),
-            'korisnikID' => 'required|exists:korisnik,id'
-        ]);
+        'iznos' => 'required|numeric|min:' . ($aukcija->trenutna_cena + 10),
+        'korisnik_id' => 'required|exists:korisnik,id'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greška pri validaciji ponude.',
-                'errors' => $validator->errors()
-            ], 400);  //Bad request
-        }
-
-        if ($aukcija->statusAukcije !== 'aktivna') {
-             return response()->json([
-                'success' => false,
-                'message' => 'Aukcija nije aktivna. Status: ' . $aukcija->statusAukcije
-            ], 403); // Forbidden
-        }
-        
-        if ($request->iznos <= $najvisaPonuda) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ponuda mora biti veća od trenutne najviše ponude.'
-            ], 400); //Bad request
-        }
-
-        $ponuda = $aukcija->ponude()->create([
-            'korisnikID' => $request->korisnikID,
-            'iznos' => $request->iznos,
-            'vremePonude' => now(),
-        ]);
-
-        $aukcija->update(['trenutnaCena' => $request->iznos]);
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Ponuda uspešno postavljena.',
-            'data' => new PonudaResource($ponuda->load(['aukcija', 'korisnik']))
-        ], 201); //Created
+            'success' => false,
+            'message' => 'Greška pri validaciji ponude.',
+            'errors' => $validator->errors()
+        ], 400); 
+    }
+
+    if ($aukcija->status_aukcije !== 'aktivna') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Aukcija nije aktivna. Status: ' . $aukcija->status_aukcije
+        ], 403);
+    }
+    
+    try {
+        DB::beginTransaction();
+
+        $ponuda = Ponuda::create([
+            'korisnik_id' => $request->korisnik_id,
+            'iznos' => $request->iznos,
+            'vreme_ponude' => now(),
+            'aukcija_id' => $aukcija->id,
+        ]);
+
+        $aukcija->update(['trenutna_cena' => $request->iznos]);
+
+        DB::commit();
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Došlo je do greške prilikom postavljanja ponude.',
+            'error' => $e->getMessage()
+        ], 500); // Internal Server Error
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Ponuda uspešno postavljena.',
+        'data' => new PonudaResource($ponuda)
+    ], 201);
     }
 
 

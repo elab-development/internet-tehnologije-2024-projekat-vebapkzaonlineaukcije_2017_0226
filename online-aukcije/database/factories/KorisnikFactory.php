@@ -25,9 +25,9 @@ class KorisnikFactory extends Factory
             'prezime' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'lozinka' => Hash::make('password'),
-            'brojTelefona' => $this->faker->phoneNumber(),
+            'broj_telefona' => $this->faker->phoneNumber(),
             'adresa' => $this->faker->address(),
-            'stanjeNaRacunu' => $this->faker->numberBetween(0,1000000),
+            'stanje_na_racunu' => $this->faker->numberBetween(0,1000000),
             
             
         ];

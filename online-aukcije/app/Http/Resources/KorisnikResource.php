@@ -20,9 +20,9 @@ class KorisnikResource extends JsonResource
             'prezime' => $this->prezime,
             'email' => $this->email,
             'lozinka' => $this->lozinka,
-            'brojTelefona' => $this->brojTelefona,
+            'broj_telefona' => $this->broj_telefona,
             'adresa' =>$this->adresa,
-            'stanjeNaRacunu' =>$this->stanjeNaRacunu,
+            'stanje_na_racunu' =>$this->stanje_na_racunu,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
 

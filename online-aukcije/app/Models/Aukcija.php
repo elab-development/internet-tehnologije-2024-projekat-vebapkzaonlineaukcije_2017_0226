@@ -11,25 +11,25 @@ class Aukcija extends Model
     protected $table = 'aukcija';
 
     protected $fillable = [
-        'pocetnaCena',
-        'trenutnaCena',
-        'datumPocetka',
-        'statusAukcije'
+        'pocetna_cena',
+        'trenutna_cena',
+        'datum_pocetka',
+        'status_aukcije'
     ];
 
     protected $casts = [
-        'datumPocetka' => 'datetime', // Reci Laravelu da je ovo datum/vreme
+        'datum_pocetka' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     public function ponude()
     {
-        return $this->hasMany(Ponuda::class, 'aukcijaID');
+        return $this->hasMany(Ponuda::class, 'aukcija_id');
     }
 
     public function proizvodi()
     {
-        return $this->hasMany(Proizvod::class, 'aukcijaID');
+        return $this->hasMany(Proizvod::class, 'aukcija_id');
     }
 }

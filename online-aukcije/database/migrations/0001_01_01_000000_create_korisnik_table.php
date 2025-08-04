@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('prezime');
             $table->string('email')->unique();
             $table->string('lozinka');
-            $table->string('brojTelefona');
+            $table->string('broj_telefona');
             $table->string('adresa');
-            $table->integer('stanjeNaRacunu');
+            $table->integer('stanje_na_racunu');
             $table->timestamps();
         });
 

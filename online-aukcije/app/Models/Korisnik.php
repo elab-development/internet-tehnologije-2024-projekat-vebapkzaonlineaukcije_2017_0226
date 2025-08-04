@@ -15,9 +15,9 @@ class Korisnik extends Model
         'prezime',
         'email',
         'lozinka',
-        'brojTelefona',
+        'broj_telefona',
         'adresa',
-        'stanjeNaRacunu',
+        'stanje_na_racunu',
     ];
 
     protected $hidden = [
@@ -26,6 +26,6 @@ class Korisnik extends Model
 
     public function ponude()
     {
-        return $this->hasMany(Ponuda::class, 'korisnikID');
+        return $this->hasMany(Ponuda::class, 'korisnik_id');
     }
 }

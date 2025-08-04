@@ -6,6 +6,7 @@ use App\Models\Proizvod;
 use Illuminate\Http\Request;
 use App\Models\Aukcija;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ProizvodResource;
 
 class ProizvodAPIController extends Controller
 {
@@ -27,8 +28,7 @@ class ProizvodAPIController extends Controller
             'opis' => 'nullable|string',
             'kategorija' => 'required|string',
             'stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
-            'slikaURL' => 'required|url'
-            // ...ostala polja proizvoda
+            'slika_url' => 'required|url'
         ]);
 
         if ($validator->fails()) {
@@ -53,7 +53,7 @@ class ProizvodAPIController extends Controller
      */
     public function show(Proizvod $proizvod, Aukcija $aukcija)
     {
-        if ($proizvod->aukcijaID !== $aukcija->id) {
+        if ($proizvod->aukcija_id !== $aukcija->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji.'
@@ -67,7 +67,7 @@ class ProizvodAPIController extends Controller
      */
     public function update(Request $request, Aukcija $aukcija, Proizvod $proizvod)
     {
-        if ($proizvod->aukcijaID !== $aukcija->id) {
+        if ($proizvod->aukcija_id !== $aukcija->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji, ne moze da se azurira.'
@@ -76,9 +76,9 @@ class ProizvodAPIController extends Controller
 
         $validator = Validator::make($request->all(), [
             'naziv' => 'sometimes|required|string|max:255',
-            'opis' => 'nullable|string', // 'nullable' jer možda želite dozvoliti da se opis obriše ili postavi na null
+            'opis' => 'nullable|string',
             'stanje' => 'sometimes|required|string|in:novo,kao novo,korisceno,osteceno',
-            'slikaURL' => 'sometimes|required|url',
+            'slika_url' => 'sometimes|required|url',
         ]);
 
         if ($validator->fails()) {
@@ -104,7 +104,7 @@ class ProizvodAPIController extends Controller
      */
     public function destroy(Aukcija $aukcija, Proizvod $proizvod)
     {
-        if ($proizvod->aukcijaID !== $aukcija->id) {
+        if ($proizvod->aukcija_id !== $aukcija->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji, ne može se obrisati u ovom kontekstu.'

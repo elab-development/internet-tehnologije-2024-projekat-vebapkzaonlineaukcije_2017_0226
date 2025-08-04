@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('aukcija', function (Blueprint $table) {
             $table->id();
-            $table->integer('pocetnaCena');
-            $table->integer('trenutnaCena');
-            $table->timestamp('datumPocetka');
-            $table->string('statusAukcije');
+            $table->integer('pocetna_cena');
+            $table->integer('trenutna_cena');
+            $table->timestamp('datum_pocetka');
+            $table->string('status_aukcije');
             $table->timestamps();
         });
     }

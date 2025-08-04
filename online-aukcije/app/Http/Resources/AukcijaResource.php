@@ -16,10 +16,10 @@ class AukcijaResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'pocetnaCena' => $this->pocetnaCena,
-            'trenutnaCena' => $this->trenutnaCena,
-            'datumPocetka' => $this->datumPocetka->format('Y-m-d H:i:s'),
-            'statusAukcije' => $this->statusAukcije,
+            'pocetna_cena' => $this->pocetna_cena,
+            'trenutna_cena' => $this->trenutna_cena,
+            'datum_pocetka' => $this->datum_pocetka->format('Y-m-d H:i:s'),
+            'status_aukcije' => $this->status_aukcije,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

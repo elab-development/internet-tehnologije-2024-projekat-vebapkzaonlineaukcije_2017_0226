@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ponuda', function (Blueprint $table) {
             $table->id();
             $table->integer('iznos');
-            $table->timestamp('vremePonude');
+            $table->timestamp('vreme_ponude');
             $table->timestamps();
         });
     }

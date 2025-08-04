@@ -19,24 +19,24 @@ class AukcijaFactory extends Factory
      */
     public function definition(): array
     {
-        $pocetnaCena = $this->faker->numberBetween(10,100000);
+        $pocetna_cena = $this->faker->numberBetween(10,100000);
         return [
-            'pocetnaCena'=>$pocetnaCena,
-            'trenutnaCena' => $this->faker->boolean(20)? 0 
-                : $this->faker->numberBetween($pocetnaCena, 1000000),
-            'datumPocetka' => $this->faker->dateTimeBetween('now', '+1 week'),
-            'statusAukcije' => $this->faker->randomElement(['aktivna', 'zavrsena', 'predstojeca']),
+            'pocetna_cena'=>$pocetna_cena,
+            'trenutna_cena' => $this->faker->boolean(20)? 0 
+                : $this->faker->numberBetween($pocetna_cena, 1000000),
+            'datum_pocetka' => $this->faker->dateTimeBetween('now', '+1 week'),
+            'status_aukcije' => $this->faker->randomElement(['aktivna', 'zavrsena', 'predstojeca']),
         ];
     }
 
     public function predstojeca(): static
     {
         return $this->state(function (array $attributes) {
-            $pocetnaCena = $attributes['pocetnaCena'] ?? $this->faker->numberBetween(10, 100000);
+            $pocetna_cena = $attributes['pocetna_cena'] ?? $this->faker->numberBetween(10, 100000);
 
             return [
-                'statusAukcije' => 'predstojeca',
-                'trenutnaCena' => $pocetnaCena,
+                'status_aukcije' => 'predstojeca',
+                'trenutna_cena' => $pocetna_cena,
             ];
         });
     }
