@@ -11,7 +11,7 @@ Route::get('aukcije/pretraga-po-kategoriji', [AukcijaAPIController::class, 'pret
 Route::post('aukcije/{aukcija}/ponudi', [PonudaAPIController::class, 'postaviPonudu']);
 
 Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->parameters([
-    'aukcije' => 'aukcija']);
+    'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
 
 Route::apiResource('aukcije', AukcijaAPIController::class)->parameters([
     'aukcije' => 'aukcija']);

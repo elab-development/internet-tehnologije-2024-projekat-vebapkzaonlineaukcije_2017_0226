@@ -51,7 +51,7 @@ class ProizvodAPIController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Proizvod $proizvod, Aukcija $aukcija)
+    public function show(Aukcija $aukcija, Proizvod $proizvod)
     {
         if ($proizvod->aukcija_id !== $aukcija->id) {
             return response()->json([
