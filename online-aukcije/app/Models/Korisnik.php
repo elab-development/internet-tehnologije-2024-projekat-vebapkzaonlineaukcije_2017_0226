@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Korisnik extends Model
+class Korisnik extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens, Notifiable;
     protected $table = 'korisnik';
 
     protected $fillable = [
@@ -22,7 +25,17 @@ class Korisnik extends Model
 
     protected $hidden = [
         'lozinka',
+        'remember_token',
     ];
+
+    protected $casts = [
+        'lozinka' => 'hashed',
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->lozinka;
+    }
 
     public function ponude()
     {
