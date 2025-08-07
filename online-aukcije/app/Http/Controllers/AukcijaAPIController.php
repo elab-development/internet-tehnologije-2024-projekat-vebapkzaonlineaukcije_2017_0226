@@ -12,9 +12,28 @@ class AukcijaAPIController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AukcijaResource::collection(Aukcija::all());
+        $query = Aukcija::query();
+
+        if ($request->has('status_aukcije')) {
+            $query->where('status_aukcije', $request->input('status_aukcije'));
+        }
+
+        if ($request->has('sort_by')) {
+            switch ($request->input('sort_by')) {
+                case 'cena_asc':
+                    $query->orderBy('pocetna_cena', 'asc');
+                    break;
+                case 'cena_desc':
+                    $query->orderBy('pocetna_cena', 'desc');
+                    break;
+            }
+        }
+
+        $aukcije = $query->paginate(10);
+
+        return AukcijaResource::collection($aukcije);
     }
 
     /**
