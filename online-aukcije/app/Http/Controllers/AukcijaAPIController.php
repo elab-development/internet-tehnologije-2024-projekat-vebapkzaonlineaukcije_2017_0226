@@ -6,6 +6,7 @@ use App\Models\Aukcija;
 use Illuminate\Http\Request;
 use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class AukcijaAPIController extends Controller
 {
@@ -40,32 +41,36 @@ class AukcijaAPIController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'pocetna_cena' => 'required|numeric|min:10',
-            'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'naziv' => 'required|string|max:255',
+        'pocetna_cena' => 'required|numeric|min:100|max:500000',
+        'maksimalna_cena' => 'nullable|numeric|max:1000000',
+        'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greška pri validaciji.',
-                'errors' => $validator->errors()
-            ], 400); // Bad Request
-        }
-
-        $request->merge(['trenutna_cena' => $request->input('trenutna_cena', $request->pocetna_cena)]);
-        $request->merge(['status_aukcije' => $request->input('status_aukcije', 'predstojeca')]);
-
-
-        $aukcija = Aukcija::create($request->all());
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Aukcija uspešno kreirana.',
-            'data' => new AukcijaResource($aukcija)
-        ], 201); // Created
+            'success' => false,
+            'message' => 'Greška pri validaciji.',
+            'errors' => $validator->errors()
+        ], 400);
     }
+
+    $validatedData = $validator->validated();
+
+    $validatedData['trenutna_cena'] = null;
+    $validatedData['status_aukcije'] = 'predstojeca';
+    $validatedData['vreme_isteka'] = Carbon::parse($validatedData['datum_pocetka'])->addSeconds(30);
+
+    $aukcija = Aukcija::create($validatedData);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Aukcija uspešno kreirana.',
+        'data' => new AukcijaResource($aukcija)
+    ], 201);
+}
 
     /**
      * Display the specified resource.
@@ -81,26 +86,42 @@ class AukcijaAPIController extends Controller
     public function update(Request $request, Aukcija $aukcija)
     {
         $validator = Validator::make($request->all(), [
-            'pocetna_cena' => 'sometimes|required|numeric|min:10',
-            'trenutna_cena' => 'sometimes|required|numeric|min:10|gte:pocetna_cena',
-            'datum_pocetka' => 'sometimes|required|date',
+            'naziv' => 'string|max:255',
+            'pocetna_cena' => 'numeric|min:100|max:500000',
+            'maksimalna_cena' => 'nullable|numeric|max:1000000',
+            'datum_pocetka' => 'date_format:Y-m-d H:i:s|after_or_equal:now',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Greška pri validaciji.',
+                'message' => 'Greska pri validaciji.',
                 'errors' => $validator->errors()
             ], 400);
-        }
+     }
+    
+        $validatedData = $validator->validated();
 
-        $aukcija->update($request->all());
+        if (isset($validatedData['pocetna_cena']) && $aukcija->status_aukcije != 'predstojeca') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pocetna cena se može menjati samo pre pocetka aukcije.'
+            ], 403);
+        }
+        if (isset($validatedData['datum_pocetka']) && $aukcija->status_aukcije != 'predstojeca') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Datum pocetka se može menjati samo pre pocetka aukcije.'
+            ], 403);
+        }
+    
+        $aukcija->update($validatedData);
 
         return response()->json([
             'success' => true,
             'message' => 'Aukcija uspešno ažurirana.',
             'data' => new AukcijaResource($aukcija)
-        ], 200); // OK
+        ], 200);
     }
 
     /**

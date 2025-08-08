@@ -2,51 +2,90 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\Korisnik;
 use App\Models\Aukcija;
 use App\Models\Proizvod;
 use App\Models\Ponuda;
+use Faker\Factory as Faker;
 
 class DatabaseRelationsSeeder extends Seeder
 {
-    use WithFaker;
-    /**
-     * Run the database seeds.
-     */
+    
     public function run(): void
     {
-        $this->setUpFaker(); 
+        $faker = Faker::create();
 
         $korisnici = Korisnik::factory()->count(10)->create();
         $this->command->info('Kreirano 10 korisnika.');
 
-        $aukcije = Aukcija::factory()->count(5)->create();
-        $this->command->info('Kreirano 5 aukcija.');
+        $predstojeceAukcije = Aukcija::factory()->count(5)->create();
+        $this->command->info('Kreirano 5 predstojećih aukcija.');
 
-        $aukcije->each(function ($aukcija) use ($korisnici) {
-            Proizvod::factory()->count($this->faker->numberBetween(1, 3))->create([
+        $aktivneAukcije = Aukcija::factory()->aktivna()->count(5)->create();
+        $this->command->info('Kreirano 5 aktivnih aukcija.');
+
+        $zavrseneAukcije = Aukcija::factory()->zavrsena()->count(5)->create();
+        $this->command->info('Kreirano 5 završenih aukcija.');
+        
+        $sveAukcije = $predstojeceAukcije->merge($aktivneAukcije)->merge($zavrseneAukcije);
+
+        $sveAukcije->each(function ($aukcija) use ($faker) {
+            Proizvod::factory()->count($faker->numberBetween(1, 3))->create([
                 'aukcija_id' => $aukcija->id,
             ]);
             $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeni proizvodi.");
-
-            $ponudaCount = $this->faker->numberBetween(0, 10);
-            for ($i = 0; $i < $ponudaCount; $i++) {
-                $randomKorisnik = $korisnici->random(); 
-                
-                $ponuda = Ponuda::factory()->forAukcija($aukcija)->create([
-                    'korisnik_id' => $randomKorisnik->id,
-                ]);
-
-                $aukcija->trenutna_cena = $ponuda->iznos;
-                $aukcija->save();
-            }
-            $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeno {$ponudaCount} ponuda. Finalna cena: {$aukcija->trenutna_cena}.");
         });
+
+        $aktivneAukcije->each(function ($aukcija) use ($korisnici, $faker) {
+            if ($faker->boolean(70)) {
+                $ponudaCount = $faker->numberBetween(1, 5);
+                for ($i = 0; $i < $ponudaCount; $i++) {
+                    $randomKorisnik = $korisnici->random();
+                    $ponudaIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + $faker->numberBetween(1, 100);
+                    if ($aukcija->maksimalna_cena !== null && $ponudaIznos > $aukcija->maksimalna_cena) {
+                        continue;
+                    }
+
+                    Ponuda::factory()->forAukcija($aukcija)->create([
+                        'korisnik_id' => $randomKorisnik->id,
+                        'iznos' => $ponudaIznos
+                    ]);
+
+                    $aukcija->trenutna_cena = $ponudaIznos;
+                    $aukcija->save();
+                }
+                $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeno {$ponudaCount} ponuda. 
+                Finalna cena: {$aukcija->trenutna_cena}.");
+            } else {
+                 $this->command->info("Aukcija ID: {$aukcija->id} - nema ponuda.");
+            }
+        });
+
+        $zavrseneAukcije->each(function ($aukcija) use ($korisnici, $faker) {
+            $ponudaCount = $faker->numberBetween(0, 5);
+            if ($ponudaCount > 0) {
+                 for ($i = 0; $i < $ponudaCount; $i++) {
+                    $randomKorisnik = $korisnici->random();
+                    $ponudaIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + $faker->numberBetween(1, 100);
+                    if ($aukcija->maksimalna_cena !== null && $ponudaIznos > $aukcija->maksimalna_cena) {
+                        continue;
+                    }
+                    Ponuda::factory()->forAukcija($aukcija)->create([
+                        'korisnik_id' => $randomKorisnik->id,
+                        'iznos' => $ponudaIznos
+                    ]);
+                    $aukcija->trenutna_cena = $ponudaIznos;
+                    $aukcija->save();
+                }
+                $this->command->info("Aukcija ID: {$aukcija->id} - dodeljeno {$ponudaCount} ponuda. 
+                Finalna cena: {$aukcija->trenutna_cena}.");
+            } else {
+                $this->command->info("Aukcija ID: {$aukcija->id} - bez ponuda.");
+            }
+        });
+
 
         $this->command->info('Svi podaci uspešno generisani i povezani!');
     }
-    
 }

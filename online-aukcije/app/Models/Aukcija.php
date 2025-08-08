@@ -11,14 +11,19 @@ class Aukcija extends Model
     protected $table = 'aukcija';
 
     protected $fillable = [
+        'naziv',
         'pocetna_cena',
         'trenutna_cena',
+        'maksimalna_cena',
         'datum_pocetka',
-        'status_aukcije'
+        'vreme_isteka',
+        'status_aukcije',
+
     ];
 
     protected $casts = [
         'datum_pocetka' => 'datetime',
+        'vreme_isteka'=> 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -8,61 +8,81 @@ use App\Models\Aukcija;
 use App\Http\Resources\PonudaResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PonudaAPIController extends Controller
 {
 
     public function postaviPonudu(Request $request, Aukcija $aukcija)
     {
-
-        $validator = Validator::make($request->all(), [
-        'iznos' => 'required|numeric|min:' . ($aukcija->trenutna_cena + 10),
-        'korisnik_id' => 'required|exists:korisnik,id'
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Greška pri validaciji ponude.',
-            'errors' => $validator->errors()
-        ], 400); 
-    }
-
-    if ($aukcija->status_aukcije !== 'aktivna') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Aukcija nije aktivna. Status: ' . $aukcija->status_aukcije
-        ], 403);
-    }
+        if ($aukcija->status_aukcije !== 'aktivna' || Carbon::now()->gt($aukcija->vreme_isteka)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aukcija nije aktivna.'
+            ], 403);
+        }
     
-    try {
-        DB::beginTransaction();
+        $minimalniIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + 100;
+    
+        $rules = [
+            'iznos' => 'required|numeric|gt:' . $minimalniIznos,
+            'korisnik_id' => 'required|exists:korisnik,id'
+        ];
+    
+        if ($aukcija->maksimalna_cena !== null) {
+            $rules['iznos'] .= '|lte:' . $aukcija->maksimalna_cena;
+        }
 
-        $ponuda = Ponuda::create([
-            'korisnik_id' => $request->korisnik_id,
-            'iznos' => $request->iznos,
-            'vreme_ponude' => now(),
-            'aukcija_id' => $aukcija->id,
-        ]);
+        $validator = Validator::make($request->all(), $rules);
 
-        $aukcija->update(['trenutna_cena' => $request->iznos]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Greška pri validaciji ponude.',
+                'errors' => $validator->errors()
+            ], 400); 
+        }
+    
+        $validatedData = $validator->validated();
 
-        DB::commit();
+        try {
+            DB::beginTransaction();
 
-    } catch (\Exception $e) {
-        DB::rollBack();
+            $novoVremeIsteka = Carbon::now()->addSeconds(10);
+            $maksimalnoVremeIsteka = $aukcija->datum_pocetka->copy()->addSeconds(30);
+
+            if ($novoVremeIsteka->gt($maksimalnoVremeIsteka)) {
+                $aukcija->vreme_isteka = $maksimalnoVremeIsteka;
+            } else {
+                $aukcija->vreme_isteka = $novoVremeIsteka;
+            }
+
+            $ponuda = Ponuda::create([
+                'korisnik_id' => $validatedData['korisnik_id'],
+                'iznos' => $validatedData['iznos'],
+                'vreme_ponude' => now(),
+                'aukcija_id' => $aukcija->id,
+            ]);
+
+            $aukcija->trenutna_cena = $validatedData['iznos'];
+            $aukcija->save(); 
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Došlo je do greške prilikom postavljanja ponude.',
+                'error' => $e->getMessage()
+            ], 500); 
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Došlo je do greške prilikom postavljanja ponude.',
-            'error' => $e->getMessage()
-        ], 500); // Internal Server Error
-    }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Ponuda uspešno postavljena.',
-        'data' => new PonudaResource($ponuda)
-    ], 201);
+            'success' => true,
+            'message' => 'Ponuda uspešno postavljena.',
+            'data' => new PonudaResource($ponuda)
+        ], 201);
     }
 
 
