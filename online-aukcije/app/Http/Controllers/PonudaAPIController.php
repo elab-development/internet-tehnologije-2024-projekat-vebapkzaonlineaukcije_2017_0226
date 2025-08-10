@@ -6,6 +6,7 @@ use App\Models\Ponuda;
 use Illuminate\Http\Request;
 use App\Models\Aukcija;
 use App\Http\Resources\PonudaResource;
+use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -48,13 +49,11 @@ class PonudaAPIController extends Controller
         try {
             DB::beginTransaction();
 
-            $novoVremeIsteka = Carbon::now()->addSeconds(10);
-            $maksimalnoVremeIsteka = $aukcija->datum_pocetka->copy()->addSeconds(30);
+            $vremeProduzenjaSekunde = 10;
+            $novoVremeIstekaNaPonudu = Carbon::now()->addSeconds($vremeProduzenjaSekunde);
 
-            if ($novoVremeIsteka->gt($maksimalnoVremeIsteka)) {
-                $aukcija->vreme_isteka = $maksimalnoVremeIsteka;
-            } else {
-                $aukcija->vreme_isteka = $novoVremeIsteka;
+            if ($novoVremeIstekaNaPonudu->gt($aukcija->vreme_isteka)) {
+                $aukcija->vreme_isteka = $novoVremeIstekaNaPonudu;
             }
 
             $ponuda = Ponuda::create([

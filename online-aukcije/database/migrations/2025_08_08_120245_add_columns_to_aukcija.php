@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('aukcija', function (Blueprint $table) {
             $table->string('naziv')->after('id');
             $table->integer('maksimalna_cena')->nullable()->after('trenutna_cena');
-            $table->timestamp('vreme_isteka')->nullable()->after('datum_pocetka'); 
+            $table->dateTime('vreme_isteka')->nullable()->after('datum_pocetka'); 
     });
     }
 

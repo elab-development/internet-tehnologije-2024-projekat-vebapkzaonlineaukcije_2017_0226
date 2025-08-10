@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('pocetna_cena');
             $table->integer('trenutna_cena');
-            $table->timestamp('datum_pocetka');
+            $table->dateTime('datum_pocetka');
             $table->string('status_aukcije');
             $table->timestamps();
         });

@@ -61,7 +61,7 @@ class AukcijaAPIController extends Controller
 
     $validatedData['trenutna_cena'] = null;
     $validatedData['status_aukcije'] = 'predstojeca';
-    $validatedData['vreme_isteka'] = Carbon::parse($validatedData['datum_pocetka'])->addSeconds(30);
+    $validatedData['vreme_isteka'] = Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300);
 
     $aukcija = Aukcija::create($validatedData);
 
