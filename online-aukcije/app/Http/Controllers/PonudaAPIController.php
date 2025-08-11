@@ -27,7 +27,6 @@ class PonudaAPIController extends Controller
     
         $rules = [
             'iznos' => 'required|numeric|gt:' . $minimalniIznos,
-            'korisnik_id' => 'required|exists:korisnik,id'
         ];
     
         if ($aukcija->maksimalna_cena !== null) {
@@ -56,8 +55,10 @@ class PonudaAPIController extends Controller
                 $aukcija->vreme_isteka = $novoVremeIstekaNaPonudu;
             }
 
+            $korisnikId = auth()->id();
+
             $ponuda = Ponuda::create([
-                'korisnik_id' => $validatedData['korisnik_id'],
+                'korisnik_id' => $korisnikId,
                 'iznos' => $validatedData['iznos'],
                 'vreme_ponude' => now(),
                 'aukcija_id' => $aukcija->id,

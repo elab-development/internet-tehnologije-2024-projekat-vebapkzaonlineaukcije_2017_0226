@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Aukcija;
 use Illuminate\Support\Carbon;
+use App\Models\Korisnik;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Aukcija>
@@ -19,7 +20,6 @@ class AukcijaFactory extends Factory
      */
     public function definition(): array
     {
-        // Generišemo datum početka u bliskoj budućnosti (na primer, 1-3 dana od sada)
         $datumPocetka = Carbon::now()->addDays(rand(1, 7))->addSeconds(rand(0, 86400));
         
         $pocetnaCena = $this->faker->numberBetween(100, 500000);
@@ -28,11 +28,12 @@ class AukcijaFactory extends Factory
         return [
             'naziv' => $this->faker->sentence(2),
             'pocetna_cena' => $pocetnaCena,
-            'trenutna_cena' => null, // Uvek null za novu aukciju
+            'trenutna_cena' => null,
             'maksimalna_cena' => $maksimalnaCena,
             'datum_pocetka' => $datumPocetka,
-            'status_aukcije' => 'predstojeca', // Uvek predstojeca za novu aukciju
-            'vreme_isteka' => $datumPocetka->copy()->addSeconds(30), // Dodajemo 30 sekundi na datum početka
+            'status_aukcije' => 'predstojeca',
+            'vreme_isteka' => $datumPocetka->copy()->addSeconds(30),
+            'korisnik_id' => Korisnik::inRandomOrder()->first()->id,
         ];
     }
 

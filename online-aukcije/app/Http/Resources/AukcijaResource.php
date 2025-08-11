@@ -24,6 +24,7 @@ class AukcijaResource extends JsonResource
             'status_aukcije' => $this->status_aukcije,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'korisnik_id' => $this->korisnik_id
         ];
     }
 }

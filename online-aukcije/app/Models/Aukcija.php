@@ -18,6 +18,7 @@ class Aukcija extends Model
         'datum_pocetka',
         'vreme_isteka',
         'status_aukcije',
+        'korisnik_id',
 
     ];
 
@@ -36,5 +37,10 @@ class Aukcija extends Model
     public function proizvodi()
     {
         return $this->hasMany(Proizvod::class, 'aukcija_id');
+    }
+
+    public function korisnik()
+    {
+        return $this->belongsTo(Korisnik::class, 'korisnik_id');
     }
 }

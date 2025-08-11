@@ -41,4 +41,9 @@ class Korisnik extends Authenticatable
     {
         return $this->hasMany(Ponuda::class, 'korisnik_id');
     }
+
+    public function aukcije()
+    {
+        return $this->hasMany(Ponuda::class, 'korisnik_id');
+    }
 }
