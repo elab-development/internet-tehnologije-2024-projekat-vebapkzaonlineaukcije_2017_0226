@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ProizvodResource;
 
 class AukcijaResource extends JsonResource
 {
@@ -24,7 +25,8 @@ class AukcijaResource extends JsonResource
             'status_aukcije' => $this->status_aukcije,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'korisnik_id' => $this->korisnik_id
+            'korisnik_id' => $this->korisnik_id,
+            'proizvodi' => \App\Http\Resources\ProizvodResource::collection($this->whenLoaded('proizvodi')),
         ];
     }
 }

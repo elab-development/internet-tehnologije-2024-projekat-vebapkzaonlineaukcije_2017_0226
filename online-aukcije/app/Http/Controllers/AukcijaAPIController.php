@@ -15,7 +15,7 @@ class AukcijaAPIController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Aukcija::query();
+        $query = Aukcija::with('proizvodi');
 
         if ($request->has('status_aukcije')) {
             $query->where('status_aukcije', $request->input('status_aukcije'));

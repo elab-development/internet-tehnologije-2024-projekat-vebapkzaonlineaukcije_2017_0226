@@ -18,6 +18,12 @@ class Proizvod extends Model
         'slika_url',
         'aukcija_id'
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function aukcija()
     {
         return $this->belongsTo(Aukcija::class, 'aukcija_id');
