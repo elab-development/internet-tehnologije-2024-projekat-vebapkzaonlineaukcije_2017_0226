@@ -17,6 +17,7 @@ class AukcijaResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'naziv'=>$this->naziv,
             'pocetna_cena' => $this->pocetna_cena,
             'trenutna_cena' => $this->trenutna_cena,
             'maksimalna_cena'=> $this->maksimalna_cena,

@@ -32,7 +32,7 @@ class AukcijaAPIController extends Controller
             }
         }
 
-        $aukcije = $query->paginate(10);
+        $aukcije = $query->paginate(12);
 
         return AukcijaResource::collection($aukcije);
     }
