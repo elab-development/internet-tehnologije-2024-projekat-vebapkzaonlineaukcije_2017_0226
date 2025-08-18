@@ -10,11 +10,14 @@ const HomePage = () => {
   const [status, setStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(null);
+
   useEffect(() => {
     const fetchAuctions = async () => {
       try {
         setIsLoading(true);
-        const params = {};
+        const params = { page: currentPage };
         if (status) {
           params.status_aukcije = status;
         }
@@ -26,6 +29,7 @@ const HomePage = () => {
           params,
         });
         setAuctions(response.data.data);
+        setLastPage(response.data.meta.last_page);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,7 +38,7 @@ const HomePage = () => {
     };
 
     fetchAuctions();
-  }, [status, sortBy]);
+  }, [status, sortBy, currentPage]);
 
   if (isLoading) {
     return <div>Učitavanje aukcija...</div>;
@@ -82,6 +86,26 @@ const HomePage = () => {
           {auctions.map((auction) => (
             <AuctionCard key={auction.id} auction={auction} />
           ))}
+        </div>
+
+        <div className="pagination">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Prethodna
+          </button>
+
+          <span>
+            Stranica {currentPage} od {lastPage}
+          </span>
+
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === lastPage}
+          >
+            Sledeća
+          </button>
         </div>
       </div>
     </div>
