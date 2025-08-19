@@ -32,6 +32,13 @@ class AukcijaAPIController extends Controller
             }
         }
 
+        if ($request->has('kategorija')) {
+            $nazivKategorije = $request->input('kategorija');
+            $query->whereHas('proizvodi', function ($subQuery) use ($nazivKategorije) {
+                $subQuery->where('kategorija', 'like', '%' . $nazivKategorije . '%');
+            });
+        }
+
         $aukcije = $query->paginate(12);
 
         return AukcijaResource::collection($aukcije);

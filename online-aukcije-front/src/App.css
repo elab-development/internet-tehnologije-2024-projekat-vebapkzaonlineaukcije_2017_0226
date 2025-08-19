@@ -53,16 +53,6 @@ h1 {
   gap: 2rem;
 }
 
-.no-auctions-state {
-  text-align: center;
-  font-size: 1.25rem;
-  color: #7f8c8d;
-  padding: 3rem;
-  background-color: #ecf0f1;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-
 .card-image-container img {
   width: 100%;
   height: 100%;
