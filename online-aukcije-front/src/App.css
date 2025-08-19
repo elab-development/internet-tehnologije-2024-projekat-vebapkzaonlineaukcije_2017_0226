@@ -135,3 +135,9 @@ h1 {
 .register-container button:hover {
   background-color: #5788b9; 
 }
+
+.register-link{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
