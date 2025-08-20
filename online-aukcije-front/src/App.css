@@ -19,7 +19,7 @@ h1 {
   justify-content: center;
   gap: 2rem;
   margin-bottom: 1rem;
-  background-color: #c3c3c3;
+  background-color: #3498db;
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -28,7 +28,7 @@ h1 {
 .filters-container label {
   font-weight: bold;
   margin-bottom: 0rem;
-  color: #555;
+  color: white;
 }
 
 .filters-container select {
@@ -133,11 +133,109 @@ h1 {
 }
 
 .register-container button:hover {
-  background-color: #5788b9; 
+  background-color: #3498db;
+  color: #2c455e; 
 }
 
 .register-link{
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #2c455e;
+  color: #ecf0f1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo{
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.navbar-logo img{
+  height: 50px;
+  width: auto;
+}
+
+.navbar-links{
+  list-style-type: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-title{
+  display: flex;
+  
+  
+  color:white
+}
+
+.navbar-links a,
+.navbar-auth .auth-link {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  padding: 5px 0;
+}
+
+.navbar-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.navbar-links a:hover::after {
+  width: 100%;
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-button {
+  background-color: #e74c3c; /* Crvena boja */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+.welcome-message {
+  color: #bdc3c7;
+  font-weight: 300;
+}
+
+.navbar-auth .auth-link {
+  background: none;
+  border: 2px solid #3498db;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.navbar-auth .auth-link:hover {
+  background-color: #3498db;
+  color: #2c455e;
 }

@@ -1,85 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError(null);
-    setSuccess(false);
+    setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/login",
-        formData
-      );
+      const response = await axios.post("http://localhost:8000/api/login", {
+        email,
+        password,
+      });
 
-      console.log("Ulogovanje uspesno:", response.data);
-      setSuccess(true);
+      const authToken = response.data.access_token;
+      const user = response.data.data;
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+
+      login(authToken, user);
+
+      console.log("Prijava uspesna:", response.data);
+      navigate("/login");
     } catch (err) {
       console.error(
-        "Doslo je do greske prilikom logovanja:",
-        err.response.data
+        "Doslo je do greske prilikom prijave:",
+        err.response ? err.response.data : err.message
       );
-      setError(
-        err.response.data.message || "Doslo je do greske prilikom logovanja."
-      );
+      setError(err.response?.data?.message || "Neispravan email ili lozinka.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="register-container">
-      <h2>Ulogujte se</h2>
+      <h2>Prijavi se</h2>
       {error && <div className="error-message">{error}</div>}
-      {success && (
-        <div className="success-message">Uspesno ste se ulogovali!</div>
-      )}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
             type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Lozinka:</label>
+          <label htmlFor="password">Lozinka:</label>
           <input
             type="password"
-            name="password"
-            value={formData.lozinka}
-            onChange={handleChange}
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
 
-        <button type="submit">Uloguj se</button>
-
-        <p className="register-link">
-          Nemate nalog? &nbsp;<Link to="/register"> Registrujte se ovde</Link>
-        </p>
+        <button type="submit" disabled={loading}>
+          {loading ? "Prijavljivanje..." : "Prijavi se"}
+        </button>
       </form>
+
+      <p className="register-prompt">
+        Nemas nalog? <Link to="/register">Registruj se ovde</Link>
+      </p>
     </div>
   );
 };

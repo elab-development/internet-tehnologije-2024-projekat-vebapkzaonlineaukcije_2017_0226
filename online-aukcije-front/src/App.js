@@ -4,16 +4,23 @@ import HomePage from "./components/HomePage";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import RegisterPage from "./components/RegisterPage";
 import LoginPage from "./components/LoginPage";
+import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter className="App">
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter className="App">
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </main>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
