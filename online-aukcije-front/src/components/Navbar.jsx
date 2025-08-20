@@ -35,21 +35,18 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <div className="navbar-logo">
-          <Link to="/">
-            <img
-              src="/logo3.png"
-              alt="Online aukcije logo"
-              className="logo-img"
-            />
-          </Link>
-        </div>
+        <Link to="/">
+          <img
+            src="/logo3.png"
+            alt="Online aukcije logo"
+            className="logo-img"
+          />
+        </Link>
       </div>
 
+      <h1 className="navbar-title">Online aukcije</h1>
+
       <ul className="navbar-links">
-        <li>
-          <h1 className="navbar-title">Online aukcije</h1>
-        </li>
         {isLoggedIn && (
           <>
             <li>

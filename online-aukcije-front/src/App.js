@@ -6,6 +6,7 @@ import RegisterPage from "./components/RegisterPage";
 import LoginPage from "./components/LoginPage";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
+import MyProfile from "./components/MyProfile";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/moj-profil" element={<MyProfile />} />
           </Routes>
         </main>
       </BrowserRouter>
