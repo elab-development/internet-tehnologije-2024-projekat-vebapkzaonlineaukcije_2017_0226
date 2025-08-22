@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aukcija;
+use App\Models\Korisnik;
+use App\Models\Proizvod;
 use Illuminate\Http\Request;
 use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class AukcijaAPIController extends Controller
@@ -77,7 +80,51 @@ class AukcijaAPIController extends Controller
         'success' => true,
         'message' => 'Aukcija uspešno kreirana.',
         'data' => new AukcijaResource($aukcija)
-    ], 201);
+        ], 201);
+        
+        $validator = Validator::make($request->all(), [
+            'naziv' => 'required|string|max:255',
+            'pocetna_cena' => 'required|numeric|min:0',
+            'maksimalna_cena' => 'nullable|numeric|min:0|gt:pocetna_cena',
+            
+            'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+
+            'proizvodi' => 'required|array|min:1',
+            'proizvodi.*.naziv' => 'required|string|max:255',
+            'proizvodi.*.opis' => 'required|string',
+            'proizvodi.*.kategorija' => 'required|string|max:255',
+            'proizvodi.*.stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
+            'proizvodi.*.slika_url' => 'nullable|url|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Greska pri validaciji podataka za kreiranje aukcije.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        $aukcija = Aukcija::create([
+            'korisnik_id' => Auth::id(),
+            'naziv' => $request->input('naziv'),
+            'pocetna_cena' => $request->input('pocetna_cena'),
+            'maksimalna_cena' => $request->input('maksimalna_cena'),
+            'datum_pocetka' => $request->input('datum_pocetka'),
+            'status_aukcije' => 'predstojeca',
+            'trenutna_cena' => null,
+            'vreme_isteka' => null,
+        ]);
+
+        foreach ($request->input('proizvodi') as $productData) {
+            $aukcija->proizvodi()->create($productData);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Aukcija uspesno kreirana.',
+            'data' => new AukcijaResource($aukcija->load('proizvodi'))
+        ], 201);
 }
 
     /**
@@ -177,4 +224,29 @@ class AukcijaAPIController extends Controller
 
         return AukcijaResource::collection($aukcije);
     }
+
+    public function korisnickeAukcije(Korisnik $korisnik)
+    {
+        if (Auth::id() !== $korisnik->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nemate pravo pristupa ovim aukcijama.'
+            ], 403);
+        }
+
+        $aukcije = Aukcija::where('korisnik_id', $korisnik->id)
+                          ->with('proizvodi')
+                          ->get();
+
+        if ($aukcije->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ovaj korisnik nema kreiranih aukcija.',
+                'data' => []
+            ], 200);
+        }
+
+        return AukcijaResource::collection($aukcije);
+    }
+
 }

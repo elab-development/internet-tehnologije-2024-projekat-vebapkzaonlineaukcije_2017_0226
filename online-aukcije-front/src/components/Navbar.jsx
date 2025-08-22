@@ -50,7 +50,7 @@ const Navbar = () => {
         {isLoggedIn && (
           <>
             <li>
-              <Link to="/kreiraj-aukciju">Kreiraj aukciju</Link>
+              <Link to="/moje-aukcije">Moje aukcije</Link>
             </li>
             <li>
               <Link to="/moj-profil">Moj profil</Link>

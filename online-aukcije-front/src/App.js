@@ -7,6 +7,7 @@ import LoginPage from "./components/LoginPage";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import MyProfile from "./components/MyProfile";
+import MyAuctions from "./components/MyAuctions";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/moj-profil" element={<MyProfile />} />
+            <Route path="/moje-aukcije" element={<MyAuctions />} />
           </Routes>
         </main>
       </BrowserRouter>

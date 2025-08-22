@@ -295,3 +295,280 @@ h1 {
 .profile-actions button:hover {
   background-color: #0056b3;
 }
+
+.my-auctions-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #bdbdbd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+}
+
+.my-auctions-container h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+.loading-message,
+.auth-required-message,
+.no-auctions-state {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  padding: 2rem;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.error-message {
+  background-color: #e74c3c;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.create-auction-btn {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 30px auto;
+  padding: 12px 25px;
+  background-color: #28a745; /* Zelena boja */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-auction-btn:hover {
+  background-color: #218838;
+}
+
+.auctions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.auction-item {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auction-item h3 {
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.auction-item p {
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.auction-products {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.auction-products h4 {
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.auction-products ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.auction-products li {
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.auction-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+  flex-grow: 1;
+}
+
+.edit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #0056b3;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh; /* Ograničenje visine za skrolovanje */
+  overflow-y: auto; /* Omogući skrolovanje ako je sadržaj predugačak */
+}
+
+.modal-content.small-modal {
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-content h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 25px;
+}
+
+.auction-form label {
+  display: block;
+  margin-bottom: 8px;
+  margin-top: 15px;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.auction-form input[type="text"],
+.auction-form input[type="number"],
+.auction-form input[type="date"],
+.auction-form select,
+.auction-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.product-form-group {
+  border: 1px dashed #a0a0a0;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  background-color: #fdfdfd;
+}
+
+.product-form-group h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.remove-product-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  float: right;
+}
+
+.add-product-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  width: fit-content;
+  margin-left: 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.modal-actions .save-btn,
+.modal-actions .delete-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.modal-actions .save-btn:hover {
+  background-color: #39ff64;
+}
+
+.modal-actions .cancel-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: #bababa;
+}
+
+.modal-actions .delete-btn {
+    background-color: #dc3545;
+}
+
+.modal-actions .delete-btn:hover {
+    background-color: #ff6373;
+}

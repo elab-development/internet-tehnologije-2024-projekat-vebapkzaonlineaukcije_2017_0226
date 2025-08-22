@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [userId, setUserId] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
@@ -20,17 +21,16 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           setFirstName(userData.ime || "");
           setLastName(userData.prezime || "");
-          axios.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${authToken}`;
+          setUserId(userData.id || null);
         } catch (e) {
           console.error(
-            "Greska pri parsiranju korisnickih podataka iz localStorage-a:",
+            "Greška pri parsiranju korisničkih podataka iz localStorage-a:",
             e
           );
           setIsLoggedIn(false);
           setFirstName("");
           setLastName("");
+          setUserId(null);
           localStorage.removeItem("authToken");
           localStorage.removeItem("userData");
         }
@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn(false);
         setFirstName("");
         setLastName("");
+        setUserId(null);
       }
       setLoadingAuth(false);
     };
@@ -49,27 +50,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("authToken", token);
     localStorage.setItem("userData", JSON.stringify(user));
     setIsLoggedIn(true);
-    // Poboljsana provera da se spreci greska
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    if (user) {
-      setFirstName(user.ime || "");
-      setLastName(user.prezime || "");
-    } else {
-      // Resetuj stanje ako nema korisnickih podataka
-      setFirstName("");
-      setLastName("");
-    }
+    setFirstName(user.ime || "");
+    setLastName(user.prezime || "");
+    setUserId(user.id || null);
   };
 
   const logout = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
       if (authToken) {
-        await axios.post("http://localhost:8000/api/logout");
+        await axios.post(
+          "http://localhost:8000/api/logout",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
       }
     } catch (error) {
       console.error(
-        "Greska pri odjavi sa servera:",
+        "Greška pri odjavi sa servera:",
         error.response ? error.response.data : error.message
       );
     } finally {
@@ -78,8 +80,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(false);
       setFirstName("");
       setLastName("");
-
-      delete axios.defaults.headers.common["Authorization"];
+      setUserId(null);
     }
   };
 
@@ -87,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn,
     firstName,
     lastName,
+    userId,
     login,
     logout,
     loadingAuth,

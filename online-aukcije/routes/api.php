@@ -24,6 +24,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('/korisnik',[KorisnikAPIController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    Route::get('/korisnici/{korisnik}/aukcije', [AukcijaAPIController::class, 'korisnickeAukcije']);
+
     Route::post('aukcije/{aukcija}/ponudi', [PonudaAPIController::class, 'postaviPonudu']);
 
     Route::apiResource('aukcije', AukcijaAPIController::class)->except(['index', 'show'])->parameters([
