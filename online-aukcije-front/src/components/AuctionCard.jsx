@@ -21,8 +21,10 @@ const AuctionCard = ({ auction }) => {
   }
 
   const prvaSlika =
-    proizvodi && proizvodi.length > 0
-      ? proizvodi[0].slika_url
+    proizvodi && proizvodi.length > 0 && proizvodi[0].slika_url
+      ? proizvodi[0].slika_url.startsWith("http")
+        ? proizvodi[0].slika_url
+        : `http://localhost:8000${proizvodi[0].slika_url}`
       : "https://via.placeholder.com/300x200";
 
   const datumPocetka = new Date(datum_pocetka);

@@ -8,7 +8,6 @@ const MyAuctions = () => {
   const [myAuctions, setMyAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  //const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -81,12 +80,19 @@ const MyAuctions = () => {
   };
 
   const handleProductFormChange = (index, e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
     const newProductFormsData = [...productFormsData];
-    newProductFormsData[index] = {
-      ...newProductFormsData[index],
-      [name]: value,
-    };
+    if (name === "slika") {
+      newProductFormsData[index] = {
+        ...newProductFormsData[index],
+        slika: files[0],
+      };
+    } else {
+      newProductFormsData[index] = {
+        ...newProductFormsData[index],
+        [name]: value,
+      };
+    }
     setProductFormsData(newProductFormsData);
   };
 
@@ -128,15 +134,25 @@ const MyAuctions = () => {
       : "00:00:00";
     const fullDateTime = `${auctionFormData.datum_pocetka} ${timeWithSeconds}`;
 
+    const formData = new FormData();
+    formData.append("naziv", auctionFormData.naziv);
+    formData.append("pocetna_cena", auctionFormData.pocetna_cena);
+    formData.append("maksimalna_cena", auctionFormData.maksimalna_cena);
+    formData.append("datum_pocetka", fullDateTime);
+
+    productFormsData.forEach((product, index) => {
+      formData.append(`proizvodi[${index}][naziv]`, product.naziv);
+      formData.append(`proizvodi[${index}][opis]`, product.opis);
+      formData.append(`proizvodi[${index}][kategorija]`, product.kategorija);
+      formData.append(`proizvodi[${index}][stanje]`, product.stanje);
+      if (product.slika) {
+        formData.append(`proizvodi[${index}][slika]`, product.slika);
+      }
+    });
+
     try {
       const authToken = localStorage.getItem("authToken");
-      const payload = {
-        ...auctionFormData,
-        datum_pocetka: fullDateTime,
-        proizvodi: productFormsData.filter((product) => product.naziv),
-      };
-
-      await axios.post("http://localhost:8000/api/aukcije", payload, {
+      await axios.post("http://localhost:8000/api/aukcije", formData, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -449,12 +465,12 @@ const MyAuctions = () => {
                     ))}
                   </select>
 
-                  <label>Slika URL:</label>
+                  <label>Slika:</label>
                   <input
-                    type="text"
-                    name="slika_url"
-                    value={product.slika_url}
+                    type="file"
+                    name="slika"
                     onChange={(e) => handleProductFormChange(index, e)}
+                    accept="image/*"
                   />
 
                   {productFormsData.length > 1 && (
@@ -597,12 +613,12 @@ const MyAuctions = () => {
                     ))}
                   </select>
 
-                  <label>Slika URL:</label>
+                  <label>Slika:</label>
                   <input
-                    type="text"
-                    name="slika_url"
-                    value={product.slika_url}
+                    type="file"
+                    name="slika"
                     onChange={(e) => handleProductFormChange(index, e)}
+                    accept="image/*"
                   />
 
                   {productFormsData.length > 1 && (

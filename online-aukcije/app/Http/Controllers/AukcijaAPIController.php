@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class AukcijaAPIController extends Controller
@@ -52,50 +53,61 @@ class AukcijaAPIController extends Controller
      */
     public function store(Request $request)
 {
-    $validator = Validator::make($request->all(), [
-        'naziv' => 'required|string|max:255',
-        'pocetna_cena' => 'required|numeric|min:100|max:500000',
-        'maksimalna_cena' => 'nullable|numeric|max:1000000',
-        'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
-        'proizvodi' => 'required|array|min:1',
-        'proizvodi.*.naziv' => 'required|string|max:255',
-        'proizvodi.*.opis' => 'required|string',
-        'proizvodi.*.kategorija' => 'required|string|max:255',
-        'proizvodi.*.stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
-        'proizvodi.*.slika_url' => 'nullable|url|max:2048',
-    ]);
+        $validator = Validator::make($request->all(), [
+            'naziv' => 'required|string|max:255',
+            'pocetna_cena' => 'required|numeric|min:100|max:500000',
+            'maksimalna_cena' => 'nullable|numeric|max:1000000',
+            'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'proizvodi' => 'required|array|min:1',
+            'proizvodi.*.naziv' => 'required|string|max:255',
+            'proizvodi.*.opis' => 'required|string',
+            'proizvodi.*.kategorija' => 'required|string|max:255',
+            'proizvodi.*.stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
+            'proizvodi.*.slika' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Greska pri validaciji podataka za kreiranje aukcije.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        
+        $validatedData = $validator->validated();
+
+        $aukcija = Aukcija::create([
+            'korisnik_id' => Auth::id(),
+            'naziv' => $validatedData['naziv'],
+            'pocetna_cena' => $validatedData['pocetna_cena'],
+            'maksimalna_cena' => $validatedData['maksimalna_cena'],
+            'datum_pocetka' => $validatedData['datum_pocetka'],
+            'status_aukcije' => 'predstojeca',
+            'trenutna_cena' => null,
+            'vreme_isteka' => Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300), 
+        ]);
+
+        foreach ($request->input('proizvodi') as $index => $productData) {
+            if ($request->hasFile("proizvodi.{$index}.slika")) {
+                $productFile = $request->file("proizvodi.{$index}.slika");
+                
+                $path = $productFile->store('proizvodi', 'public');
+
+                $productData['slika_url'] = Storage::url($path);
+            } else {
+                $productData['slika_url'] = null;
+            }
+            
+            $aukcija->proizvodi()->create($productData);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Greska pri validaciji podataka za kreiranje aukcije.',
-            'errors' => $validator->errors()
-        ], 400);
-    }
-    
-    $validatedData = $validator->validated();
-
-    $aukcija = Aukcija::create([
-        'korisnik_id' => Auth::id(),
-        'naziv' => $validatedData['naziv'],
-        'pocetna_cena' => $validatedData['pocetna_cena'],
-        'maksimalna_cena' => $validatedData['maksimalna_cena'],
-        'datum_pocetka' => $validatedData['datum_pocetka'],
-        'status_aukcije' => 'predstojeca',
-        'trenutna_cena' => null,
-        'vreme_isteka' => Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300), 
-    ]);
-
-    foreach ($validatedData['proizvodi'] as $productData) {
-        $aukcija->proizvodi()->create($productData);
+            'success' => true,
+            'message' => 'Aukcija i proizvodi uspešno kreirani.',
+            'data' => new AukcijaResource($aukcija->load('proizvodi')) 
+        ], 201);
     }
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Aukcija i proizvodi uspešno kreirani.',
-        'data' => new AukcijaResource($aukcija->load('proizvodi'))
-    ], 201);
-}
 
     /**
      * Display the specified resource.
