@@ -57,74 +57,44 @@ class AukcijaAPIController extends Controller
         'pocetna_cena' => 'required|numeric|min:100|max:500000',
         'maksimalna_cena' => 'nullable|numeric|max:1000000',
         'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+        'proizvodi' => 'required|array|min:1',
+        'proizvodi.*.naziv' => 'required|string|max:255',
+        'proizvodi.*.opis' => 'required|string',
+        'proizvodi.*.kategorija' => 'required|string|max:255',
+        'proizvodi.*.stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
+        'proizvodi.*.slika_url' => 'nullable|url|max:2048',
     ]);
 
     if ($validator->fails()) {
         return response()->json([
             'success' => false,
-            'message' => 'Greška pri validaciji.',
+            'message' => 'Greska pri validaciji podataka za kreiranje aukcije.',
             'errors' => $validator->errors()
         ], 400);
     }
-
+    
     $validatedData = $validator->validated();
 
-    $validatedData['korisnik_id'] = auth()->id();
-    $validatedData['trenutna_cena'] = null;
-    $validatedData['status_aukcije'] = 'predstojeca';
-    $validatedData['vreme_isteka'] = Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300); 
+    $aukcija = Aukcija::create([
+        'korisnik_id' => Auth::id(),
+        'naziv' => $validatedData['naziv'],
+        'pocetna_cena' => $validatedData['pocetna_cena'],
+        'maksimalna_cena' => $validatedData['maksimalna_cena'],
+        'datum_pocetka' => $validatedData['datum_pocetka'],
+        'status_aukcije' => 'predstojeca',
+        'trenutna_cena' => null,
+        'vreme_isteka' => Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300), 
+    ]);
 
-    $aukcija = Aukcija::create($validatedData);
+    foreach ($validatedData['proizvodi'] as $productData) {
+        $aukcija->proizvodi()->create($productData);
+    }
 
     return response()->json([
         'success' => true,
-        'message' => 'Aukcija uspešno kreirana.',
-        'data' => new AukcijaResource($aukcija)
-        ], 201);
-        
-        $validator = Validator::make($request->all(), [
-            'naziv' => 'required|string|max:255',
-            'pocetna_cena' => 'required|numeric|min:0',
-            'maksimalna_cena' => 'nullable|numeric|min:0|gt:pocetna_cena',
-            
-            'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
-
-            'proizvodi' => 'required|array|min:1',
-            'proizvodi.*.naziv' => 'required|string|max:255',
-            'proizvodi.*.opis' => 'required|string',
-            'proizvodi.*.kategorija' => 'required|string|max:255',
-            'proizvodi.*.stanje' => 'required|string|in:novo,kao novo,korisceno,osteceno',
-            'proizvodi.*.slika_url' => 'nullable|url|max:2048',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greska pri validaciji podataka za kreiranje aukcije.',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $aukcija = Aukcija::create([
-            'korisnik_id' => Auth::id(),
-            'naziv' => $request->input('naziv'),
-            'pocetna_cena' => $request->input('pocetna_cena'),
-            'maksimalna_cena' => $request->input('maksimalna_cena'),
-            'datum_pocetka' => $request->input('datum_pocetka'),
-            'status_aukcije' => 'predstojeca',
-            'trenutna_cena' => null,
-            'vreme_isteka' => null,
-        ]);
-
-        foreach ($request->input('proizvodi') as $productData) {
-            $aukcija->proizvodi()->create($productData);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Aukcija uspesno kreirana.',
-            'data' => new AukcijaResource($aukcija->load('proizvodi'))
-        ], 201);
+        'message' => 'Aukcija i proizvodi uspešno kreirani.',
+        'data' => new AukcijaResource($aukcija->load('proizvodi'))
+    ], 201);
 }
 
     /**

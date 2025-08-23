@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import AuctionCard from "./AuctionCard";
+import { AuthContext } from "../context/AuthContext";
 
 const HomePage = () => {
+  const { auctionUpdateTrigger } = useContext(AuthContext);
   const [auctions, setAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,7 +55,7 @@ const HomePage = () => {
     };
 
     fetchAuctions();
-  }, [status, sortBy, currentPage, categorySearchTerm]);
+  }, [status, sortBy, currentPage, categorySearchTerm, auctionUpdateTrigger]);
 
   if (isLoading) {
     return <div>Učitavanje aukcija...</div>;

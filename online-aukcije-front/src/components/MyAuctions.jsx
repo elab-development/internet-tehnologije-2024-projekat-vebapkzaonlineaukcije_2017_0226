@@ -3,11 +3,12 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
 const MyAuctions = () => {
-  const { isLoggedIn, userId, loadingAuth } = useContext(AuthContext);
+  const { isLoggedIn, userId, loadingAuth, triggerAuctionUpdate } =
+    useContext(AuthContext);
   const [myAuctions, setMyAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  //const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -72,7 +73,7 @@ const MyAuctions = () => {
     if (!loadingAuth) {
       fetchMyAuctions();
     }
-  }, [isLoggedIn, userId, refreshTrigger, loadingAuth]);
+  }, [isLoggedIn, userId, triggerAuctionUpdate, loadingAuth]);
 
   const handleAuctionFormChange = (e) => {
     const { name, value } = e.target;
@@ -142,7 +143,7 @@ const MyAuctions = () => {
       });
       setShowCreateModal(false);
       resetForms();
-      setRefreshTrigger((prev) => prev + 1);
+      triggerAuctionUpdate();
     } catch (err) {
       console.error(
         "Greška pri kreiranju aukcije:",
@@ -187,7 +188,7 @@ const MyAuctions = () => {
       setShowEditModal(false);
       setSelectedAuction(null);
       resetForms();
-      setRefreshTrigger((prev) => prev + 1);
+      triggerAuctionUpdate();
     } catch (err) {
       console.error(
         "Greška pri izmeni aukcije:",
@@ -252,7 +253,7 @@ const MyAuctions = () => {
       );
       setShowDeleteConfirm(false);
       setAuctionToDeleteId(null);
-      setRefreshTrigger((prev) => prev + 1);
+      triggerAuctionUpdate();
     } catch (err) {
       console.error(
         "Greška pri brisanju aukcije:",

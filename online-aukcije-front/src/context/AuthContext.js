@@ -9,6 +9,10 @@ export const AuthProvider = ({ children }) => {
   const [lastName, setLastName] = useState("");
   const [userId, setUserId] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [auctionUpdateTrigger, setAuctionUpdateTrigger] = useState(0);
+  const triggerAuctionUpdate = () => {
+    setAuctionUpdateTrigger((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -92,6 +96,8 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     loadingAuth,
+    auctionUpdateTrigger,
+    triggerAuctionUpdate,
   };
 
   return (
