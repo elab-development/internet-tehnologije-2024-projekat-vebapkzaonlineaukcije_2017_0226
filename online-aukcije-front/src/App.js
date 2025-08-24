@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import MyProfile from "./components/MyProfile";
 import MyAuctions from "./components/MyAuctions";
+import AukcijaDetailsPage from "./components/AuctionDetailsPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/moj-profil" element={<MyProfile />} />
             <Route path="/moje-aukcije" element={<MyAuctions />} />
+            <Route path="/aukcija/:id" element={<AukcijaDetailsPage />} />
           </Routes>
         </main>
       </BrowserRouter>

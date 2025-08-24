@@ -114,6 +114,9 @@ class AukcijaAPIController extends Controller
      */
     public function show(Aukcija $aukcija)
     {
+        $aukcija->load('proizvodi', 'ponude');
+        $aukcija->ponude = $aukcija->ponude->sortByDesc('iznos_ponude');
+
         return new AukcijaResource($aukcija);
     }
 

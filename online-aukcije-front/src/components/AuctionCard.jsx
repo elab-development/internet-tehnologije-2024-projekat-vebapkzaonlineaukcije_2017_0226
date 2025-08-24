@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const AuctionCard = ({ auction }) => {
   const {
@@ -51,7 +52,9 @@ const AuctionCard = ({ auction }) => {
         <p>
           <strong>Pocetak aukcije</strong> {formatiraniDatumPocetka}
         </p>
-        <button className="view-button">Pogledaj aukciju</button>
+        <Link to={`/aukcija/${auction.id}`}>
+          <button className="view-button">Pogledaj aukciju</button>
+        </Link>
       </div>
     </div>
   );

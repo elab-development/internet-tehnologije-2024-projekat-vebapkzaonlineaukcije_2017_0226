@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ProizvodResource;
+use App\Http\Resources\PonudaResource;
 
 class AukcijaResource extends JsonResource
 {
@@ -28,6 +29,7 @@ class AukcijaResource extends JsonResource
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'korisnik_id' => $this->korisnik_id,
             'proizvodi' => \App\Http\Resources\ProizvodResource::collection($this->whenLoaded('proizvodi')),
+            'ponude' => \App\Http\Resources\PonudaResource::collection($this->whenLoaded('ponude')),
         ];
     }
 }
