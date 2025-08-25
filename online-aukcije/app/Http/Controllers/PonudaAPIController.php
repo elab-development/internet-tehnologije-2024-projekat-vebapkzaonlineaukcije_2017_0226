@@ -23,10 +23,10 @@ class PonudaAPIController extends Controller
             ], 403);
         }
     
-        $minimalniIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + 100;
+        $minimalniIznos = $aukcija->trenutna_cena ? $aukcija->trenutna_cena + 100 : $aukcija->pocetna_cena;
     
         $rules = [
-            'iznos' => 'required|numeric|gt:' . $minimalniIznos,
+            'iznos' => 'required|numeric|gte:' . $minimalniIznos,
         ];
     
         if ($aukcija->maksimalna_cena !== null) {

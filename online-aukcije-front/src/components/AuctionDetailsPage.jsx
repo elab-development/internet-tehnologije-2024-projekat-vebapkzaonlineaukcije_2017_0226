@@ -4,9 +4,8 @@ import axios from "axios";
 import PonudaForm from "./PonudaForm";
 import CountdownTimer from "./CountdownTimer";
 
-const AukcijaDetailsPage = () => {
+const AuctionDetailsPage = () => {
   const { id } = useParams();
-
   const [aukcija, setAukcija] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,10 +25,14 @@ const AukcijaDetailsPage = () => {
 
   useEffect(() => {
     fetchAukcijaDetails();
+    const interval = setInterval(() => {
+      if (aukcija && aukcija.status_aukcije !== "zavrsena") {
+        fetchAukcijaDetails();
+      }
+    }, 2000);
 
-    const interval = setInterval(fetchAukcijaDetails, 5000);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [id, aukcija]);
 
   if (isLoading) {
     return <div>Učitavanje detalja aukcije...</div>;
@@ -43,10 +46,9 @@ const AukcijaDetailsPage = () => {
     return <div>Aukcija nije pronadjena.</div>;
   }
 
-  const trenutnaCena =
-    aukcija.ponude && aukcija.ponude.length > 0
-      ? aukcija.ponude[0].iznos
-      : "Nema ponuda";
+  const trenutnaCena = aukcija.trenutna_cena
+    ? aukcija.trenutna_cena
+    : "Nema ponuda";
 
   return (
     <div className="auction-details-page">
@@ -58,7 +60,8 @@ const AukcijaDetailsPage = () => {
         <strong>Početna cena:</strong> {aukcija.pocetna_cena} RSD
       </p>
       <p>
-        <strong>Trenutna cena:</strong> {trenutnaCena} RSD
+        <strong>Trenutna cena:</strong> {trenutnaCena}{" "}
+        {trenutnaCena !== "Nema ponuda" && "RSD"}
       </p>
 
       <div className="timer-area">
@@ -81,7 +84,6 @@ const AukcijaDetailsPage = () => {
         <PonudaForm
           aukcijaId={aukcija.id}
           onBidSuccess={fetchAukcijaDetails}
-          trenutnaCena={trenutnaCena}
           aukcija={aukcija}
         />
       )}
@@ -112,4 +114,4 @@ const AukcijaDetailsPage = () => {
   );
 };
 
-export default AukcijaDetailsPage;
+export default AuctionDetailsPage;

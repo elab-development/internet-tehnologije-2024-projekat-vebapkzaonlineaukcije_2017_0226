@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
+const PonudaForm = ({ aukcijaId, onBidSuccess, aukcija }) => {
   const [iznos, setIznos] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,13 +13,11 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
     setError(null);
     setSuccess(null);
 
-    let minimalniIznos;
-
-    if (aukcija.ponude && aukcija.ponude.length > 0) {
-      minimalniIznos = aukcija.ponude[0].iznos + 100;
-    } else {
-      minimalniIznos = aukcija.pocetna_cena;
-    }
+    const trenutnaCenaZaProracun =
+      aukcija.trenutna_cena || aukcija.pocetna_cena;
+    const minimalniIznos = aukcija.trenutna_cena
+      ? trenutnaCenaZaProracun + 100
+      : aukcija.pocetna_cena;
 
     if (parseFloat(iznos) < minimalniIznos) {
       setError(`Ponuda mora biti najmanje ${minimalniIznos} RSD.`);
@@ -28,14 +26,28 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
     }
 
     try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        setError("Niste ulogovani.");
+        setLoading(false);
+        return;
+      }
       const response = await axios.post(
         `http://localhost:8000/api/aukcije/${aukcijaId}/ponudi`,
-        { iznos: iznos }
+        { iznos: iznos },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setSuccess(response.data.message);
       setIznos("");
 
-      onBidSuccess();
+      if (onBidSuccess) {
+        onBidSuccess();
+      }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
@@ -47,6 +59,10 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
     }
   };
 
+  const minimalnaPonudaPlaceholder = aukcija.trenutna_cena
+    ? aukcija.trenutna_cena + 100
+    : aukcija.pocetna_cena;
+
   return (
     <form onSubmit={handleSubmit} className="ponuda-forma">
       <h3>Postavi ponudu</h3>
@@ -54,7 +70,7 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
         type="number"
         value={iznos}
         onChange={(e) => setIznos(e.target.value)}
-        placeholder="Unesite iznos"
+        placeholder={`Minimalna ponuda: ${minimalnaPonudaPlaceholder}`}
         required
       />
       <button type="submit" disabled={loading}>
