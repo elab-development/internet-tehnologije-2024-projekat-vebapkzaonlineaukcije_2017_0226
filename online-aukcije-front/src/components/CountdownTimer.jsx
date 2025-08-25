@@ -30,7 +30,7 @@ const CountdownTimer = ({ targetDate }) => {
 
   return (
     <div className="countdown-timer">
-      <p>Preostalo vreme: {formatTime()}</p>
+      <p>{formatTime()}</p>
     </div>
   );
 };

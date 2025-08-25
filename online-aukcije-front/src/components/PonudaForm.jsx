@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena }) => {
+const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena, aukcija }) => {
   const [iznos, setIznos] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,16 +13,23 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, trenutnaCena }) => {
     setError(null);
     setSuccess(null);
 
-    const minimalniIznos = (trenutnaCena || 0) + 1;
-    if (parseFloat(iznos) <= minimalniIznos) {
-      setError(`Iznos mora biti veći od trenutne cene.`);
+    let minimalniIznos;
+
+    if (aukcija.ponude && aukcija.ponude.length > 0) {
+      minimalniIznos = aukcija.ponude[0].iznos + 100;
+    } else {
+      minimalniIznos = aukcija.pocetna_cena;
+    }
+
+    if (parseFloat(iznos) < minimalniIznos) {
+      setError(`Ponuda mora biti najmanje ${minimalniIznos} RSD.`);
       setLoading(false);
       return;
     }
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/ponuda/${aukcijaId}`,
+        `http://localhost:8000/api/aukcije/${aukcijaId}/ponudi`,
         { iznos: iznos }
       );
       setSuccess(response.data.message);

@@ -14,7 +14,7 @@ return new class extends Migration
         //Schema::dropIfExists('cache');
         //Schema::dropIfExists('cache_locks');
         Schema::dropIfExists('failed_jobs');
-        Schema::dropIfExists('jobs');
+        //Schema::dropIfExists('jobs');
         Schema::dropIfExists('job_batches');
         Schema::dropIfExists('password_reset_tokens');
         //Schema::dropIfExists('sessions');
@@ -54,7 +54,7 @@ return new class extends Migration
         //    $table->integer('expiration');
        // });
 
-        Schema::create('jobs', function (Blueprint $table) {
+       /*Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
             $table->longText('payload');
@@ -62,7 +62,7 @@ return new class extends Migration
             $table->unsignedInteger('reserved_at')->nullable();
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');
-        });
+        });*/
 
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();

@@ -46,7 +46,7 @@ const AukcijaDetailsPage = () => {
   const trenutnaCena =
     aukcija.ponude && aukcija.ponude.length > 0
       ? aukcija.ponude[0].iznos
-      : aukcija.pocetna_cena;
+      : "Nema ponuda";
 
   return (
     <div className="auction-details-page">
@@ -82,10 +82,11 @@ const AukcijaDetailsPage = () => {
           aukcijaId={aukcija.id}
           onBidSuccess={fetchAukcijaDetails}
           trenutnaCena={trenutnaCena}
+          aukcija={aukcija}
         />
       )}
 
-      <h3>Detalji proizvoda:</h3>
+      <h3>Proizvodi:</h3>
       {aukcija.proizvodi.map((proizvod, index) => (
         <div key={index}>
           <h4>{proizvod.naziv}</h4>

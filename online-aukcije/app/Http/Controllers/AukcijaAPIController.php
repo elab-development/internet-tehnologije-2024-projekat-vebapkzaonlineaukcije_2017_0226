@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Jobs\StartAuctionJob;
+use App\Jobs\EndAuctionJob;
 
 class AukcijaAPIController extends Controller
 {
@@ -84,7 +86,7 @@ class AukcijaAPIController extends Controller
             'datum_pocetka' => $validatedData['datum_pocetka'],
             'status_aukcije' => 'predstojeca',
             'trenutna_cena' => null,
-            'vreme_isteka' => Carbon::parse($validatedData['datum_pocetka'])->addSeconds(300), 
+            'vreme_isteka' => Carbon::parse($validatedData['datum_pocetka'])->addSeconds(100), 
         ]);
 
         foreach ($request->input('proizvodi') as $index => $productData) {
@@ -100,6 +102,12 @@ class AukcijaAPIController extends Controller
             
             $aukcija->proizvodi()->create($productData);
         }
+
+        $startDateTime = Carbon::parse($aukcija->datum_pocetka);
+        $endDateTime = Carbon::parse($aukcija->vreme_isteka);
+
+        StartAuctionJob::dispatch($aukcija)->delay($startDateTime);
+        EndAuctionJob::dispatch($aukcija)->delay($endDateTime);
 
         return response()->json([
             'success' => true,
