@@ -24,21 +24,26 @@ class PonudaAPIController extends Controller
         }
     
         $minimalniIznos = $aukcija->trenutna_cena ? $aukcija->trenutna_cena + 100 : $aukcija->pocetna_cena;
-    
+        $korisnik = auth()->user();
         $rules = [
-            'iznos' => 'required|numeric|gte:' . $minimalniIznos,
+            'iznos' => 'required|numeric|gte:' . $minimalniIznos . '|lte:' . $korisnik->stanje_na_racunu,
         ];
     
         if ($aukcija->maksimalna_cena !== null) {
             $rules['iznos'] .= '|lte:' . $aukcija->maksimalna_cena;
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [
+            'iznos.gte' => 'Ponuda mora biti veća od trenutne cene.',
+            'iznos.lte' => 'Nemate dovoljno sredstava na računu za ovu ponudu.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Greška pri validaciji ponude.',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 400); 
         }
@@ -48,24 +53,42 @@ class PonudaAPIController extends Controller
         try {
             DB::beginTransaction();
 
+            $svezaAukcija = Aukcija::lockForUpdate()->find($aukcija->id);
+
+            if ($svezaAukcija->status_aukcije !== 'aktivna' || 
+                Carbon::now()->gt($svezaAukcija->vreme_isteka)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aukcija je istekla pre nego što je ponuda postavljena'
+                ], 409);
+            }
+
+            $minimalniIznosSvezeAukcije = $svezaAukcija->trenutna_cena ? $svezaAukcija->trenutna_cena + 100 : $svezaAukcija->pocetna_cena;
+            if ($validatedData['iznos'] < $minimalniIznosSvezeAukcije) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ponuda je niža od nove minimalne ponude (' . $minimalniIznosSvezeAukcije . ' RSD).'
+                ], 409);
+            }
+
             $vremeProduzenjaSekunde = 10;
             $novoVremeIstekaNaPonudu = Carbon::now()->addSeconds($vremeProduzenjaSekunde);
 
-            if ($novoVremeIstekaNaPonudu->gt($aukcija->vreme_isteka)) {
-                $aukcija->vreme_isteka = $novoVremeIstekaNaPonudu;
+            if ($novoVremeIstekaNaPonudu->gt($svezaAukcija->vreme_isteka)) {
+                $svezaAukcija->vreme_isteka = $novoVremeIstekaNaPonudu;
             }
 
-            $korisnikId = auth()->id();
-
             $ponuda = Ponuda::create([
-                'korisnik_id' => $korisnikId,
+                'korisnik_id' => $korisnik->id,
                 'iznos' => $validatedData['iznos'],
                 'vreme_ponude' => now(),
-                'aukcija_id' => $aukcija->id,
+                'aukcija_id' => $svezaAukcija->id,
             ]);
 
-            $aukcija->trenutna_cena = $validatedData['iznos'];
-            $aukcija->save(); 
+            $svezaAukcija->trenutna_cena = $validatedData['iznos'];
+            $svezaAukcija->save(); 
 
             DB::commit();
 
