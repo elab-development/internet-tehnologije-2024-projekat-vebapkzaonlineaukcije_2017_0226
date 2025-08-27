@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 import MyProfile from "./components/MyProfile";
 import MyAuctions from "./components/MyAuctions";
 import AukcijaDetailsPage from "./components/AuctionDetailsPage";
+import Notifications from "./components/Notifications";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/moj-profil" element={<MyProfile />} />
             <Route path="/moje-aukcije" element={<MyAuctions />} />
             <Route path="/aukcija/:id" element={<AukcijaDetailsPage />} />
+            <Route path="/obavestenja" element={<Notifications />} />
           </Routes>
         </main>
       </BrowserRouter>

@@ -11,6 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\AuctionEndedWithWinner;
+use App\Notifications\AuctionEndedWithoutBids;
 
 class EndAuctionJob implements ShouldQueue
 {
@@ -42,22 +44,31 @@ class EndAuctionJob implements ShouldQueue
                 }
 
                 $pobednickaPonuda = $aukcija->ponude->sortByDesc('iznos')->first();
+                $kreator = $aukcija->korisnik;
+                
+                if (!$kreator) {
+                    throw new \Exception("Kreator aukcije (ID: {$aukcija->id}) nije pronadjen.");
+                }
 
                 if ($pobednickaPonuda) {
                     $pobednik = Korisnik::lockForUpdate()->find($pobednickaPonuda->korisnik_id);
-                    $kreator = $aukcija->korisnik;
 
-                    $iznosTransakcije = $pobednickaPonuda->iznos;
-                    
-                    if (!$kreator) {
-                         throw new \Exception("Kreator aukcije (ID: {$aukcija->id}) nije pronadjen.");
+                    if (!$pobednik) {
+                        return;
                     }
 
+                    $iznosTransakcije = $pobednickaPonuda->iznos;
                     $pobednik->stanje_na_racunu -= $iznosTransakcije;
                     $pobednik->save();
+                    
+                    $kreator_zakljucan = Korisnik::lockForUpdate()->find($kreator->id);
+                    $kreator_zakljucan->stanje_na_racunu += $iznosTransakcije;
+                    $kreator_zakljucan->save();
 
-                    $kreator->stanje_na_racunu += $iznosTransakcije;
-                    $kreator->save();
+                    $pobednik->notify(new AuctionEndedWithWinner($aukcija, $pobednik, $kreator));
+                    $kreator->notify(new AuctionEndedWithWinner($aukcija, $pobednik, $kreator));
+                } else {
+                    $kreator->notify(new AuctionEndedWithoutBids($aukcija));
                 }
 
                 $aukcija->status_aukcije = 'zavrsena';

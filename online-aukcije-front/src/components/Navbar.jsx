@@ -55,6 +55,9 @@ const Navbar = () => {
             <li>
               <Link to="/moj-profil">Moj profil</Link>
             </li>
+            <li>
+              <Link to="/obavestenja">Obaveštenja</Link>
+            </li>
           </>
         )}
       </ul>

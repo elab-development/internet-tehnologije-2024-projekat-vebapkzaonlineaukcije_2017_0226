@@ -7,6 +7,7 @@ use App\Http\Controllers\PonudaAPIController;
 use App\Http\Controllers\ProizvodAPIController;
 use App\Http\Controllers\KorisnikAPIController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\NotificationController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,6 +20,9 @@ Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->only(['in
     'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
 
     Route::get('/korisnik',[KorisnikAPIController::class, 'show']);
     Route::patch('/korisnik',[KorisnikAPIController::class, 'update']);
