@@ -10,6 +10,7 @@ use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Jobs\EndAuctionJob;
 
 class PonudaAPIController extends Controller
 {
@@ -73,11 +74,13 @@ class PonudaAPIController extends Controller
                 ], 409);
             }
 
-            $vremeProduzenjaSekunde = 10;
-            $novoVremeIstekaNaPonudu = Carbon::now()->addSeconds($vremeProduzenjaSekunde);
+            $sekundeDoIsteka = Carbon::now()->diffInSeconds($svezaAukcija->vreme_isteka, false);
+            $granicaZaProduzenje = 30;
+            $vremeProduzenja = 10;
 
-            if ($novoVremeIstekaNaPonudu->gt($svezaAukcija->vreme_isteka)) {
-                $svezaAukcija->vreme_isteka = $novoVremeIstekaNaPonudu;
+            if ($sekundeDoIsteka > 0 && $sekundeDoIsteka <= $granicaZaProduzenje) {
+                $svezaAukcija->vreme_isteka = $svezaAukcija->vreme_isteka->addSeconds($vremeProduzenja);
+                EndAuctionJob::dispatch($svezaAukcija)->delay($svezaAukcija->vreme_isteka);
             }
 
             $ponuda = Ponuda::create([
@@ -101,10 +104,18 @@ class PonudaAPIController extends Controller
             ], 500); 
         }
 
-        return response()->json([
+       /* return response()->json([
             'success' => true,
             'message' => 'Ponuda uspešno postavljena.',
             'data' => new PonudaResource($ponuda)
+        ], 201);*/
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ponuda uspešno postavljena.',
+            'data' => [
+                'aukcija' => new AukcijaResource($svezaAukcija->load('proizvodi', 'ponude')) 
+            ]
         ], 201);
     }
 

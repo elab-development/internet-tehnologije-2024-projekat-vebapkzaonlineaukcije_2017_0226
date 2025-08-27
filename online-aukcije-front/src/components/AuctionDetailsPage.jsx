@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import PonudaForm from "./PonudaForm";
@@ -10,29 +10,43 @@ const AuctionDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchAukcijaDetails = async () => {
+  const fetchAukcijaDetails = useCallback(async () => {
     try {
       const response = await axios.get(
         `http://localhost:8000/api/aukcije/${id}`
       );
       setAukcija(response.data.data);
     } catch (err) {
-      setError("Došlo je do greške prilikom učitavanja aukcije.");
+      setError("Doslo je do greške prilikom ucitavanja aukcije.");
     } finally {
-      setIsLoading(false);
+      if (isLoading) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, [id, isLoading]);
 
   useEffect(() => {
     fetchAukcijaDetails();
-    const interval = setInterval(() => {
-      if (aukcija && aukcija.status_aukcije !== "zavrsena") {
-        fetchAukcijaDetails();
-      }
+
+    const intervalId = setInterval(() => {
+      setAukcija((trenutnaAukcija) => {
+        if (trenutnaAukcija && trenutnaAukcija.status_aukcije !== "zavrsena") {
+          fetchAukcijaDetails();
+        }
+        return trenutnaAukcija;
+      });
     }, 2000);
 
-    return () => clearInterval(interval);
-  }, [id, aukcija]);
+    return () => clearInterval(intervalId);
+  }, [fetchAukcijaDetails]);
+
+  const handleBidSuccess = (updatedAukcija) => {
+    console.log(
+      "Azuriranje stanja sa novim podacima o aukciji:",
+      updatedAukcija
+    );
+    setAukcija(updatedAukcija);
+  };
 
   if (isLoading) {
     return <div>Učitavanje detalja aukcije...</div>;
@@ -74,7 +88,10 @@ const AuctionDetailsPage = () => {
         {aukcija.status_aukcije === "aktivna" && (
           <>
             <p>Aukcija se završava za:</p>
-            <CountdownTimer targetDate={aukcija.vreme_isteka} />
+            <CountdownTimer
+              key={aukcija.vreme_isteka}
+              targetDate={aukcija.vreme_isteka}
+            />
           </>
         )}
         {aukcija.status_aukcije === "zavrsena" && <p>Aukcija je završena.</p>}
@@ -83,7 +100,7 @@ const AuctionDetailsPage = () => {
       {aukcija.status_aukcije === "aktivna" && (
         <PonudaForm
           aukcijaId={aukcija.id}
-          onBidSuccess={fetchAukcijaDetails}
+          onBidSuccess={handleBidSuccess}
           aukcija={aukcija}
         />
       )}

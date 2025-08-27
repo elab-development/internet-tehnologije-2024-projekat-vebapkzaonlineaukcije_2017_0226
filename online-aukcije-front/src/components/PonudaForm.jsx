@@ -42,11 +42,23 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, aukcija }) => {
           },
         }
       );
-      setSuccess(response.data.message);
-      setIznos("");
+      console.log("Odgovor sa servera:", response.data);
 
-      if (onBidSuccess) {
-        onBidSuccess();
+      const updatedAukcija = response?.data?.data?.aukcija;
+
+      if (updatedAukcija) {
+        setSuccess(response.data.message);
+        setIznos("");
+        if (onBidSuccess) {
+          onBidSuccess(updatedAukcija);
+        }
+      } else {
+        // Ako 'updatedAukcija' nije pronađen, ispisujemo grešku.
+        // Ovo znači da struktura odgovora nije ispravna.
+        console.error(
+          "Struktura odgovora sa servera je neispravna. Nedostaje 'data.aukcija'."
+        );
+        setError("Došlo je do greške pri obradi odgovora sa servera.");
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
