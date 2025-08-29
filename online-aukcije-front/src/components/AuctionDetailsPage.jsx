@@ -1,54 +1,96 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import PonudaForm from "./PonudaForm";
 import CountdownTimer from "./CountdownTimer";
+import { AuthContext } from "../context/AuthContext";
 
 const AuctionDetailsPage = () => {
   const { id } = useParams();
   const [aukcija, setAukcija] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { isLoggedIn, loadingAuth, logout } = useContext(AuthContext);
 
   const fetchAukcijaDetails = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/aukcije/${id}`
-      );
-      setAukcija(response.data.data);
-    } catch (err) {
-      setError("Doslo je do greške prilikom ucitavanja aukcije.");
-    } finally {
-      if (isLoading) {
-        setIsLoading(false);
-      }
+    if (loadingAuth) {
+      return;
     }
-  }, [id, isLoading]);
+
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const headers = {};
+
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
+      const response = await axios.get(
+        `http://localhost:8000/api/aukcije/${id}`,
+        { headers }
+      );
+
+      setAukcija(response.data.data);
+      console.log(
+        "fetchAukcijaDetails: Aukcija dohvaćena.",
+        response.data.data
+      );
+
+      if (response.data.data.moja_najvisa_ponuda_iznos) {
+        console.log(
+          "fetchAukcijaDetails: moja_najvisa_ponuda_iznos je prisutan:",
+          response.data.data.moja_najvisa_ponuda_iznos
+        );
+      } else {
+        console.log(
+          "fetchAukcijaDetails: moja_najvisa_ponuda_iznos NIJE prisutan."
+        );
+      }
+    } catch (err) {
+      if (
+        err.response &&
+        (err.response.status === 401 || err.response.status === 403)
+      ) {
+        console.error(
+          "fetchAukcijaDetails: Autentifikacija neuspešna. Odjavljivanje..."
+        );
+        await logout();
+      }
+      setError("Došlo je do greške prilikom učitavanja aukcije.");
+      console.error("fetchAukcijaDetails: Greška prilikom dohvatanja:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, logout, loadingAuth]);
 
   useEffect(() => {
+    if (loadingAuth) return;
+
+    console.log("useEffect: Pokrećem inicijalno dohvatanje i polling.");
     fetchAukcijaDetails();
 
     const intervalId = setInterval(() => {
-      setAukcija((trenutnaAukcija) => {
-        if (trenutnaAukcija && trenutnaAukcija.status_aukcije !== "zavrsena") {
-          fetchAukcijaDetails();
-        }
-        return trenutnaAukcija;
-      });
+      console.log("Polling: Pozivam fetchAukcijaDetails...");
+      fetchAukcijaDetails();
     }, 2000);
 
-    return () => clearInterval(intervalId);
-  }, [fetchAukcijaDetails]);
+    return () => {
+      console.log("useEffect cleanup: Zaustavljam polling.");
+      clearInterval(intervalId);
+    };
+  }, [fetchAukcijaDetails, loadingAuth]);
 
-  const handleBidSuccess = (updatedAukcija) => {
+  const handleBidSuccess = useCallback((azuriranaAukcija) => {
     console.log(
-      "Azuriranje stanja sa novim podacima o aukciji:",
-      updatedAukcija
+      "handleBidSuccess: Primljen je azuriran objekat aukcije.",
+      azuriranaAukcija
     );
-    setAukcija(updatedAukcija);
-  };
+    setAukcija(azuriranaAukcija);
 
-  if (isLoading) {
+    console.log("handleBidSuccess: Stanje aukcije je trenutno azurirano.");
+  }, []);
+
+  if (loadingAuth || isLoading) {
     return <div>Učitavanje detalja aukcije...</div>;
   }
 
@@ -63,6 +105,26 @@ const AuctionDetailsPage = () => {
   const trenutnaCena = aukcija.trenutna_cena
     ? aukcija.trenutna_cena
     : "Nema ponuda";
+
+  let statusPonudeKorisnika = null;
+  if (isLoggedIn && aukcija.status_aukcije === "aktivna") {
+    if (
+      aukcija.moja_najvisa_ponuda_iznos === aukcija.trenutna_cena &&
+      aukcija.moja_najvisa_ponuda_iznos !== null
+    ) {
+      statusPonudeKorisnika = (
+        <p className="bid-status-leading">
+          <strong>Vodiš u aukciji!</strong>
+        </p>
+      );
+    } else if (aukcija.moja_najvisa_ponuda_iznos !== null) {
+      statusPonudeKorisnika = (
+        <p className="bid-status-losing">
+          <strong>Trenutno gubiš u aukciji!.</strong>
+        </p>
+      );
+    }
+  }
 
   return (
     <div className="auction-details-page">
@@ -96,6 +158,8 @@ const AuctionDetailsPage = () => {
         )}
         {aukcija.status_aukcije === "zavrsena" && <p>Aukcija je završena.</p>}
       </div>
+
+      {statusPonudeKorisnika}
 
       {aukcija.status_aukcije === "aktivna" && (
         <PonudaForm

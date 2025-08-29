@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Jobs\EndAuctionJob;
+use Illuminate\Support\Facades\Log;
 
 class PonudaAPIController extends Controller
 {
@@ -24,8 +25,18 @@ class PonudaAPIController extends Controller
             ], 403);
         }
     
-        $minimalniIznos = $aukcija->trenutna_cena ? $aukcija->trenutna_cena + 100 : $aukcija->pocetna_cena;
         $korisnik = auth()->user();
+
+        if (!$korisnik) {
+            Log::warning("PonudaAPIController: postaviPonudu - Korisnik nije prijavljen.");
+            return response()->json([
+                'success' => false,
+                'message' => 'Morate biti prijavljeni da biste postavili ponudu.'
+            ], 401);
+        }
+
+        $minimalniIznos = $aukcija->trenutna_cena ? $aukcija->trenutna_cena + 100 : $aukcija->pocetna_cena;
+        
         $rules = [
             'iznos' => 'required|numeric|gte:' . $minimalniIznos . '|lte:' . $korisnik->stanje_na_racunu,
         ];
@@ -97,18 +108,13 @@ class PonudaAPIController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error("PonudaAPIController: postaviPonudu - Greška: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'Došlo je do greške prilikom postavljanja ponude.',
                 'error' => $e->getMessage()
             ], 500); 
         }
-
-       /* return response()->json([
-            'success' => true,
-            'message' => 'Ponuda uspešno postavljena.',
-            'data' => new PonudaResource($ponuda)
-        ], 201);*/
 
         return response()->json([
             'success' => true,

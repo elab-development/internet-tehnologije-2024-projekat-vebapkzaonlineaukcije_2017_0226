@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Aukcija;
 use App\Models\Korisnik;
 use App\Models\Proizvod;
+use App\Models\Ponuda;
 use Illuminate\Http\Request;
 use App\Http\Resources\AukcijaResource;
 use Illuminate\Support\Facades\Validator;
@@ -21,7 +22,7 @@ class AukcijaAPIController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Aukcija::with('proizvodi');
+        $query = Aukcija::with('proizvodi','ponude');
 
         if ($request->has('status_aukcije')) {
             $query->where('status_aukcije', $request->input('status_aukcije'));
@@ -123,7 +124,7 @@ class AukcijaAPIController extends Controller
     public function show(Aukcija $aukcija)
     {
         $aukcija->load('proizvodi', 'ponude');
-        $aukcija->ponude = $aukcija->ponude->sortByDesc('iznos_ponude');
+        $aukcija->ponude = $aukcija->ponude->sortByDesc('iznos');
 
         return new AukcijaResource($aukcija);
     }

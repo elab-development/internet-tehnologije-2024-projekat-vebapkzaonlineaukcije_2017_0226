@@ -726,3 +726,15 @@ h1 {
   font-size: 0.85rem;
   white-space: nowrap;
 }
+
+.bid-status-leading {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+.bid-status-losing {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: center;
+}

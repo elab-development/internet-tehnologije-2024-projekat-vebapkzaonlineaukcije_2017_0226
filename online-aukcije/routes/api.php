@@ -14,7 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('aukcije/pretraga-po-kategoriji', [AukcijaAPIController::class, 'pretragaPoKategoriji']);
 
-Route::apiResource('aukcije', AukcijaAPIController::class)->only(['index', 'show'])->parameters([
+Route::apiResource('aukcije', AukcijaAPIController::class)->only(['index'])->parameters([
     'aukcije' => 'aukcija']);
 Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->only(['index', 'show'])->parameters([
     'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
@@ -32,7 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('aukcije/{aukcija}/ponudi', [PonudaAPIController::class, 'postaviPonudu']);
 
-    Route::apiResource('aukcije', AukcijaAPIController::class)->except(['index', 'show'])->parameters([
+    Route::apiResource('aukcije', AukcijaAPIController::class)->except(['index'])->parameters([
         'aukcije' => 'aukcija']);
     Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->except(['index', 'show'])->parameters([
         'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
