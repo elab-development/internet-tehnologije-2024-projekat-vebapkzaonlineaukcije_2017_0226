@@ -14,9 +14,14 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Jobs\StartAuctionJob;
 use App\Jobs\EndAuctionJob;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
 class AukcijaAPIController extends Controller
 {
+
+    use AuthorizesRequests, ValidatesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -178,6 +183,8 @@ class AukcijaAPIController extends Controller
      */
     public function destroy(Aukcija $aukcija)
     {
+        $this->authorize('delete', $aukcija);
+
         $aukcija->delete();
 
         return response()->json([

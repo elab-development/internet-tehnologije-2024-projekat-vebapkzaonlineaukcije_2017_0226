@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PonudaForm from "./PonudaForm";
 import CountdownTimer from "./CountdownTimer";
@@ -10,7 +10,9 @@ const AuctionDetailsPage = () => {
   const [aukcija, setAukcija] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isLoggedIn, loadingAuth, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { isLoggedIn, loadingAuth, logout, isAdmin, userId } =
+    useContext(AuthContext);
 
   const fetchAukcijaDetails = useCallback(async () => {
     if (loadingAuth) {
@@ -126,6 +128,28 @@ const AuctionDetailsPage = () => {
     }
   }
 
+  const handleDelete = async () => {
+    if (
+      window.confirm("Da li ste sigurni da želite da obrišete ovu aukciju?")
+    ) {
+      try {
+        const token = localStorage.getItem("authToken");
+        await axios.delete(`http://localhost:8000/api/aukcije/${aukcija.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        navigate("/");
+      } catch (error) {
+        console.error("Greška pri brisanju aukcije:", error);
+      }
+    }
+  };
+
+  console.log("Ulogovan si:", isLoggedIn);
+  console.log("Da li si admin:", isAdmin);
+  console.log("Tvoj ID:", userId);
+  console.log("ID vlasnika aukcije:", aukcija.korisnik_id);
+  console.log("Da li se ID-evi poklapaju:", userId === aukcija.korisnik_id);
+
   return (
     <div className="auction-details-page">
       <h2>{aukcija.naziv}</h2>
@@ -139,6 +163,14 @@ const AuctionDetailsPage = () => {
         <strong>Trenutna cena:</strong> {trenutnaCena}{" "}
         {trenutnaCena !== "Nema ponuda" && "RSD"}
       </p>
+
+      <div className="delete-auctions-admin">
+        {isLoggedIn && isAdmin && (
+          <button className="delete1-btn" onClick={handleDelete}>
+            Obriši Aukciju
+          </button>
+        )}
+      </div>
 
       <div className="timer-area">
         {aukcija.status_aukcije === "predstojeca" && (

@@ -533,7 +533,7 @@ h1 {
   margin-left: 0;
 }
 
-.modal-actions {
+.modal-actions, .delete-auctions-admin {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
@@ -541,7 +541,7 @@ h1 {
 }
 
 .modal-actions .save-btn,
-.modal-actions .delete-btn {
+.modal-actions .delete-btn, .delete-auctions-admin .delete1-btn  {
   background-color: #28a745;
   color: white;
   border: none;
@@ -571,11 +571,11 @@ h1 {
   background-color: #bababa;
 }
 
-.modal-actions .delete-btn {
+.modal-actions .delete-btn, .delete-auctions-admin .delete1-btn {
     background-color: #dc3545;
 }
 
-.modal-actions .delete-btn:hover {
+.modal-actions .delete-btn:hover, .delete-auctions-admin .delete1-btn:hover{
     background-color: #ff6373;
 }
 

@@ -21,6 +21,7 @@ class Korisnik extends Authenticatable
         'broj_telefona',
         'adresa',
         'stanje_na_racunu',
+        'uloga',
     ];
 
     protected $hidden = [
@@ -45,5 +46,10 @@ class Korisnik extends Authenticatable
     public function aukcije()
     {
         return $this->hasMany(Ponuda::class, 'korisnik_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->uloga === 'admin';
     }
 }

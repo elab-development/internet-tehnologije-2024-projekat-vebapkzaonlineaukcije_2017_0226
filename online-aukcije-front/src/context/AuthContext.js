@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [auctionUpdateTrigger, setAuctionUpdateTrigger] = useState(0);
+  const [userRole, setUserRole] = useState(null);
   const triggerAuctionUpdate = () => {
     setAuctionUpdateTrigger((prev) => prev + 1);
   };
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     setFirstName(user.ime || "");
     setLastName(user.prezime || "");
     setUserId(user.id || null);
+    setUserRole(user.uloga || "ulogovan korisnik");
   };
 
   const logout = async () => {
@@ -85,6 +87,7 @@ export const AuthProvider = ({ children }) => {
       setFirstName("");
       setLastName("");
       setUserId(null);
+      setUserRole(null);
     }
   };
 
@@ -98,6 +101,8 @@ export const AuthProvider = ({ children }) => {
     loadingAuth,
     auctionUpdateTrigger,
     triggerAuctionUpdate,
+    isAdmin: userRole === "admin",
+    userRole,
   };
 
   return (
