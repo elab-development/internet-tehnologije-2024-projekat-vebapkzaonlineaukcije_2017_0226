@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
           setFirstName(userData.ime || "");
           setLastName(userData.prezime || "");
           setUserId(userData.id || null);
+          setUserRole(userData.uloga || null);
         } catch (e) {
           console.error(
             "Greška pri parsiranju korisničkih podataka iz localStorage-a:",
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }) => {
           setFirstName("");
           setLastName("");
           setUserId(null);
+          setUserRole(null);
           localStorage.removeItem("authToken");
           localStorage.removeItem("userData");
         }
@@ -44,6 +46,7 @@ export const AuthProvider = ({ children }) => {
         setFirstName("");
         setLastName("");
         setUserId(null);
+        setUserRole(null);
       }
       setLoadingAuth(false);
     };

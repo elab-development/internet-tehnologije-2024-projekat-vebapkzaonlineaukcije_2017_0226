@@ -738,3 +738,33 @@ h1 {
   font-size: 1.1em;
   text-align: center;
 }
+
+.currency-converter {
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.currency-converter .conversion-buttons button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.currency-converter .conversion-buttons button:hover {
+  background-color: #f9ffbb;
+}
+
+.currency-converter .converted-amount {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #eef7ff;
+  padding: 5px;
+  border-radius: 4px;
+  display: inline-block;
+}

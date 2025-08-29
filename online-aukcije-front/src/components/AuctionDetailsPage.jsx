@@ -4,6 +4,7 @@ import axios from "axios";
 import PonudaForm from "./PonudaForm";
 import CountdownTimer from "./CountdownTimer";
 import { AuthContext } from "../context/AuthContext";
+import CurrencyConverter from "./CurrencyConverter";
 
 const AuctionDetailsPage = () => {
   const { id } = useParams();
@@ -156,9 +157,12 @@ const AuctionDetailsPage = () => {
       <p>
         <strong>Status:</strong> {aukcija.status_aukcije}
       </p>
-      <p>
-        <strong>Početna cena:</strong> {aukcija.pocetna_cena} RSD
-      </p>
+      <div className="price-section">
+        <p>
+          <strong>Početna cena:</strong> {aukcija.pocetna_cena} RSD
+        </p>
+        <CurrencyConverter amountInRSD={aukcija.pocetna_cena} />
+      </div>
       <p>
         <strong>Trenutna cena:</strong> {trenutnaCena}{" "}
         {trenutnaCena !== "Nema ponuda" && "RSD"}
