@@ -16,7 +16,6 @@ const MyAuctions = () => {
   const [auctionFormData, setAuctionFormData] = useState({
     naziv: "",
     pocetna_cena: "",
-    maksimalna_cena: "",
     datum_pocetka: "", // YYYY-MM-DD
     vreme_pocetka: "", // HH:MM
   });
@@ -116,7 +115,6 @@ const MyAuctions = () => {
     setAuctionFormData({
       naziv: "",
       pocetna_cena: "",
-      maksimalna_cena: "",
       datum_pocetka: "",
       vreme_pocetka: "",
     });
@@ -137,7 +135,6 @@ const MyAuctions = () => {
     const formData = new FormData();
     formData.append("naziv", auctionFormData.naziv);
     formData.append("pocetna_cena", auctionFormData.pocetna_cena);
-    formData.append("maksimalna_cena", auctionFormData.maksimalna_cena);
     formData.append("datum_pocetka", fullDateTime);
 
     productFormsData.forEach((product, index) => {
@@ -229,7 +226,6 @@ const MyAuctions = () => {
     setAuctionFormData({
       naziv: auction.naziv,
       pocetna_cena: auction.pocetna_cena,
-      maksimalna_cena: auction.maksimalna_cena || "",
       datum_pocetka: datePart,
       vreme_pocetka: timePart,
     });
@@ -387,15 +383,6 @@ const MyAuctions = () => {
                 min="0"
               />
 
-              <label>Maksimalna Cena (opciono):</label>
-              <input
-                type="number"
-                name="maksimalna_cena"
-                value={auctionFormData.maksimalna_cena}
-                onChange={handleAuctionFormChange}
-                min="0"
-              />
-
               <label>Datum Početka:</label>
               <input
                 type="date"
@@ -532,15 +519,6 @@ const MyAuctions = () => {
                 value={auctionFormData.pocetna_cena}
                 onChange={handleAuctionFormChange}
                 required
-                min="0"
-              />
-
-              <label>Maksimalna Cena (opciono):</label>
-              <input
-                type="number"
-                name="maksimalna_cena"
-                value={auctionFormData.maksimalna_cena}
-                onChange={handleAuctionFormChange}
                 min="0"
               />
 

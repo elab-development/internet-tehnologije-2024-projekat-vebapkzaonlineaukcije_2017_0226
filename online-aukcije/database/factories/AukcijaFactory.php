@@ -23,13 +23,11 @@ class AukcijaFactory extends Factory
         $datumPocetka = Carbon::now()->addDays(rand(1, 7))->addSeconds(rand(0, 86400));
         
         $pocetnaCena = $this->faker->numberBetween(100, 500000);
-        $maksimalnaCena = $this->faker->optional()->numberBetween($pocetnaCena + 1, 1000000);
 
         return [
             'naziv' => $this->faker->sentence(2),
             'pocetna_cena' => $pocetnaCena,
             'trenutna_cena' => null,
-            'maksimalna_cena' => $maksimalnaCena,
             'datum_pocetka' => $datumPocetka,
             'status_aukcije' => 'predstojeca',
             'vreme_isteka' => $datumPocetka->copy()->addSeconds(30),

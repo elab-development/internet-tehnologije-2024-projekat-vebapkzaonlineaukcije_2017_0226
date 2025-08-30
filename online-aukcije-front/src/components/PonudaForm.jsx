@@ -53,8 +53,6 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, aukcija }) => {
           onBidSuccess(updatedAukcija);
         }
       } else {
-        // Ako 'updatedAukcija' nije pronađen, ispisujemo grešku.
-        // Ovo znači da struktura odgovora nije ispravna.
         console.error(
           "Struktura odgovora sa servera je neispravna. Nedostaje 'data.aukcija'."
         );

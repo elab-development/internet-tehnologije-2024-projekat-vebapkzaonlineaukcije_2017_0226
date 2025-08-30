@@ -36,7 +36,6 @@ class AukcijaResource extends JsonResource
             'naziv'=>$this->naziv,
             'pocetna_cena' => $this->pocetna_cena,
             'trenutna_cena' => $this->trenutna_cena,
-            'maksimalna_cena'=> $this->maksimalna_cena,
             'datum_pocetka' => $this->datum_pocetka->format('Y-m-d H:i:s'),
             'vreme_isteka' => $this->vreme_isteka->format('Y-m-d H:i:s'),
             'status_aukcije' => $this->status_aukcije,

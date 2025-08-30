@@ -69,28 +69,19 @@ const AuctionDetailsPage = () => {
   useEffect(() => {
     if (loadingAuth) return;
 
-    console.log("useEffect: Pokrećem inicijalno dohvatanje i polling.");
     fetchAukcijaDetails();
 
     const intervalId = setInterval(() => {
-      console.log("Polling: Pozivam fetchAukcijaDetails...");
       fetchAukcijaDetails();
     }, 2000);
 
     return () => {
-      console.log("useEffect cleanup: Zaustavljam polling.");
       clearInterval(intervalId);
     };
   }, [fetchAukcijaDetails, loadingAuth]);
 
   const handleBidSuccess = useCallback((azuriranaAukcija) => {
-    console.log(
-      "handleBidSuccess: Primljen je azuriran objekat aukcije.",
-      azuriranaAukcija
-    );
     setAukcija(azuriranaAukcija);
-
-    console.log("handleBidSuccess: Stanje aukcije je trenutno azurirano.");
   }, []);
 
   if (loadingAuth || isLoading) {
@@ -145,12 +136,6 @@ const AuctionDetailsPage = () => {
     }
   };
 
-  console.log("Ulogovan si:", isLoggedIn);
-  console.log("Da li si admin:", isAdmin);
-  console.log("Tvoj ID:", userId);
-  console.log("ID vlasnika aukcije:", aukcija.korisnik_id);
-  console.log("Da li se ID-evi poklapaju:", userId === aukcija.korisnik_id);
-
   return (
     <div className="auction-details-page">
       <h2>{aukcija.naziv}</h2>
@@ -162,11 +147,15 @@ const AuctionDetailsPage = () => {
           <strong>Početna cena:</strong> {aukcija.pocetna_cena} RSD
         </p>
         <CurrencyConverter amountInRSD={aukcija.pocetna_cena} />
+
+        <p>
+          <strong>Trenutna cena:</strong> {trenutnaCena}{" "}
+          {trenutnaCena !== "Nema ponuda" && "RSD"}
+        </p>
+        {trenutnaCena !== "Nema ponuda" && (
+          <CurrencyConverter amountInRSD={aukcija.trenutna_cena} />
+        )}
       </div>
-      <p>
-        <strong>Trenutna cena:</strong> {trenutnaCena}{" "}
-        {trenutnaCena !== "Nema ponuda" && "RSD"}
-      </p>
 
       <div className="delete-auctions-admin">
         {isLoggedIn && isAdmin && (

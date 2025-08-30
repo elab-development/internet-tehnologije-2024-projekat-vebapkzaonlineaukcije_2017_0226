@@ -16,12 +16,9 @@ Route::get('aukcije/pretraga-po-kategoriji', [AukcijaAPIController::class, 'pret
 
 Route::apiResource('aukcije', AukcijaAPIController::class)->only(['index'])->parameters([
     'aukcije' => 'aukcija']);
-Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->only(['index', 'show'])->parameters([
-    'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications', [NotificationController::class, 'index']);
 
     Route::get('/korisnik',[KorisnikAPIController::class, 'show']);
@@ -34,8 +31,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::apiResource('aukcije', AukcijaAPIController::class)->except(['index'])->parameters([
         'aukcije' => 'aukcija']);
-    Route::apiResource('aukcije.proizvodi', ProizvodAPIController::class)->except(['index', 'show'])->parameters([
-        'aukcije' => 'aukcija', 'proizvodi' => 'proizvod']);
 
 });
 

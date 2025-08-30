@@ -6,7 +6,6 @@ const AuctionCard = ({ auction }) => {
     naziv,
     pocetna_cena,
     trenutna_cena,
-    maksimalna_cena,
     datum_pocetka,
     vreme_isteka,
     status_aukcije,

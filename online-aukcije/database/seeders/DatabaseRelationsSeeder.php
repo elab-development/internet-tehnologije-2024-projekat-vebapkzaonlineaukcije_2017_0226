@@ -43,9 +43,7 @@ class DatabaseRelationsSeeder extends Seeder
                 for ($i = 0; $i < $ponudaCount; $i++) {
                     $randomKorisnik = $korisnici->random();
                     $ponudaIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + $faker->numberBetween(1, 100);
-                    if ($aukcija->maksimalna_cena !== null && $ponudaIznos > $aukcija->maksimalna_cena) {
-                        continue;
-                    }
+                    
 
                     Ponuda::factory()->forAukcija($aukcija)->create([
                         'korisnik_id' => $randomKorisnik->id,
@@ -68,9 +66,7 @@ class DatabaseRelationsSeeder extends Seeder
                  for ($i = 0; $i < $ponudaCount; $i++) {
                     $randomKorisnik = $korisnici->random();
                     $ponudaIznos = ($aukcija->trenutna_cena ?? $aukcija->pocetna_cena) + $faker->numberBetween(1, 100);
-                    if ($aukcija->maksimalna_cena !== null && $ponudaIznos > $aukcija->maksimalna_cena) {
-                        continue;
-                    }
+                    
                     Ponuda::factory()->forAukcija($aukcija)->create([
                         'korisnik_id' => $randomKorisnik->id,
                         'iznos' => $ponudaIznos

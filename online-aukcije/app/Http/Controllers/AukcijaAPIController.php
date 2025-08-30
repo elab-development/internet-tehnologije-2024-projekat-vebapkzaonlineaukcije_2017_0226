@@ -64,7 +64,6 @@ class AukcijaAPIController extends Controller
         $validator = Validator::make($request->all(), [
             'naziv' => 'required|string|max:255',
             'pocetna_cena' => 'required|numeric|min:100|max:500000',
-            'maksimalna_cena' => 'nullable|numeric|max:1000000',
             'datum_pocetka' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
             'proizvodi' => 'required|array|min:1',
             'proizvodi.*.naziv' => 'required|string|max:255',
@@ -88,7 +87,6 @@ class AukcijaAPIController extends Controller
             'korisnik_id' => Auth::id(),
             'naziv' => $validatedData['naziv'],
             'pocetna_cena' => $validatedData['pocetna_cena'],
-            'maksimalna_cena' => $validatedData['maksimalna_cena'],
             'datum_pocetka' => $validatedData['datum_pocetka'],
             'status_aukcije' => 'predstojeca',
             'trenutna_cena' => null,
@@ -142,7 +140,6 @@ class AukcijaAPIController extends Controller
         $validator = Validator::make($request->all(), [
             'naziv' => 'string|max:255',
             'pocetna_cena' => 'numeric|min:100|max:500000',
-            'maksimalna_cena' => 'nullable|numeric|max:1000000',
             'datum_pocetka' => 'date_format:Y-m-d H:i:s|after_or_equal:now',
         ]);
 
