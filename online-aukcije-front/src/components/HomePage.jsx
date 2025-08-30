@@ -58,11 +58,15 @@ const HomePage = () => {
   }, [status, sortBy, currentPage, categorySearchTerm, auctionUpdateTrigger]);
 
   if (isLoading) {
-    return <div>Učitavanje aukcija...</div>;
+    return <div className="loading-message">Učitavanje aukcija...</div>;
   }
 
   if (error) {
-    return <div>Došlo je do greške: {error}</div>;
+    return (
+      <div className="profile-container error-message">
+        Došlo je do greške: {error}
+      </div>
+    );
   }
 
   return (

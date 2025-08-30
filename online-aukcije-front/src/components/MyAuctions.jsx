@@ -284,8 +284,10 @@ const MyAuctions = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="auth-required-message">
-        Morate biti prijavljeni da biste videli i upravljali svojim aukcijama.
+      <div className="notifications-container">
+        <h2 className="notifications-title">
+          Morate biti prijavljeni da biste upravljali svojim aukcijama.
+        </h2>
       </div>
     );
   }

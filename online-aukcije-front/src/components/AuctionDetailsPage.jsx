@@ -85,11 +85,17 @@ const AuctionDetailsPage = () => {
   }, []);
 
   if (loadingAuth || isLoading) {
-    return <div>Učitavanje detalja aukcije...</div>;
+    return <div className="loading-message">Učitavanje detalja aukcije...</div>;
   }
 
-  if (error) {
-    return <div>Greška: {error}</div>;
+  if (!isLoggedIn) {
+    return (
+      <div className="notifications-container">
+        <h2 className="notifications-title">
+          Morate biti prijavljeni da biste videli detalje aukcije.
+        </h2>
+      </div>
+    );
   }
 
   if (!aukcija) {

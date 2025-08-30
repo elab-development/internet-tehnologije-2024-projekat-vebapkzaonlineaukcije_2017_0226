@@ -75,6 +75,10 @@ h1 {
 .pagination button{
   font-size: 16px;
   background-color: #cccccc;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 5px 15px;
+
 }
 
 .pagination button:hover {
@@ -230,7 +234,8 @@ h1 {
 }
 
 .welcome-message {
-  color: #bdc3c7;
+  font-size: 1.5rem;
+  color: #e5f5ff;
   font-weight: 300;
 }
 
@@ -767,4 +772,19 @@ h1 {
   padding: 5px;
   border-radius: 4px;
   display: inline-block;
+}
+
+.view-button{
+  padding: 5px 5px;
+  background-color: #85c9f6;
+  cursor: pointer;
+  border: 1px solid #000000;
+  transition: background-color 0.2s;
+  border-radius: 10px;
+  font-size: 16px;
+
+}
+
+.view-button:hover {
+  background-color: #007bff;
 }

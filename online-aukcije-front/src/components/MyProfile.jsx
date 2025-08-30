@@ -72,15 +72,16 @@ const MyProfile = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="profile-container">
-        <h2>Pristup zabranjen</h2>
-        <p>Morate biti prijavljeni da biste videli svoj profil.</p>
+      <div className="notifications-container">
+        <h2 className="notifications-title">
+          Morate biti prijavljeni da biste videli svoj profil.
+        </h2>
       </div>
     );
   }
 
   if (loading) {
-    return <div className="profile-container">Učitavanje profila...</div>;
+    return <div className="loading-message">Učitavanje profila...</div>;
   }
 
   if (error) {

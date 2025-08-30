@@ -31,7 +31,7 @@ const LoginPage = () => {
       login(authToken, user);
 
       console.log("Prijava uspesna:", response.data);
-      navigate("/login");
+      navigate("/obavestenja");
     } catch (err) {
       console.error(
         "Doslo je do greske prilikom prijave:",
@@ -45,7 +45,7 @@ const LoginPage = () => {
 
   return (
     <div className="register-container">
-      <h2>Prijavi se</h2>
+      <h2>Prijavite se</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
@@ -74,10 +74,6 @@ const LoginPage = () => {
           {loading ? "Prijavljivanje..." : "Prijavi se"}
         </button>
       </form>
-
-      <p className="register-prompt">
-        Nemas nalog? <Link to="/register">Registruj se ovde</Link>
-      </p>
     </div>
   );
 };

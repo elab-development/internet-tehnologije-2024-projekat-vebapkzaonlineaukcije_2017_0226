@@ -66,7 +66,7 @@ const Navbar = () => {
         {isLoggedIn ? (
           <>
             <span className="welcome-message">
-              Zdravo, {firstName} {lastName}!
+              {firstName} {lastName}
             </span>
             <button onClick={handleLogout} className="logout-button">
               Odjavi se
