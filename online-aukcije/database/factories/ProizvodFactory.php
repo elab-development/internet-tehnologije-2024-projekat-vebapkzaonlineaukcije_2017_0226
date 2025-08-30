@@ -32,7 +32,7 @@ class ProizvodFactory extends Factory
             'stanje' => $this->faker->randomElement([
                 'novo','kao novo','korisceno','osteceno'     
             ]),
-            'slika_url' => 'https://placehold.co/600x400/FF0000/FFFFFF?text=Slika',
+            'slika_url' => 'https://placehold.co/600x400/000000/FFFFFF?text=Slika',
             'aukcija_id' => Aukcija::factory()
         ];
     }

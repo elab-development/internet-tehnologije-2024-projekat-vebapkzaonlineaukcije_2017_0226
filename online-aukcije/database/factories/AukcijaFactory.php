@@ -30,27 +30,9 @@ class AukcijaFactory extends Factory
             'trenutna_cena' => null,
             'datum_pocetka' => $datumPocetka,
             'status_aukcije' => 'predstojeca',
-            'vreme_isteka' => $datumPocetka->copy()->addSeconds(30),
+            'vreme_isteka' => $datumPocetka->copy()->addSeconds(100),
             'korisnik_id' => Korisnik::inRandomOrder()->first()->id,
         ];
-    }
-
-    public function aktivna(): Factory
-    {
-        return $this->state(function (array $attributes) {
-            $pocetnaCena = $attributes['pocetna_cena'];
-            $datumPocetka = Carbon::now()->subSeconds(rand(0, 86400));
-            $trenutnaCena = $this->faker->optional(0.7)->numberBetween($pocetnaCena, $pocetnaCena * 2);
-            $vremeIsteka = Carbon::now()->addSeconds(rand(1, 30));
-
-            return [
-                'datum_pocetka' => $datumPocetka,
-                'status_aukcije' => 'aktivna',
-                'trenutna_cena' => $trenutnaCena,
-                'vreme_isteka' => $vremeIsteka,
-            ];
-        });
-
     }
 
         public function zavrsena(): Factory

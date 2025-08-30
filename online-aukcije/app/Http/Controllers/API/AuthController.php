@@ -38,7 +38,7 @@ class AuthController extends Controller
             'prezime' => $request->prezime,
             'email' => $request->email,
             'lozinka' => Hash::make($request->password),
-            'uloga' => $request->uloga,
+            'uloga' => 'ulogovan korisnik',
             'broj_telefona' => $request->broj_telefona,
             'adresa' => $request->adresa,
             'stanje_na_racunu' => $request->stanje_na_racunu,
