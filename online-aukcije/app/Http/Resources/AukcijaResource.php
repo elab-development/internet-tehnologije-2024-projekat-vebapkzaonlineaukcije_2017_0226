@@ -44,7 +44,8 @@ class AukcijaResource extends JsonResource
             'korisnik_id' => $this->korisnik_id,
             'proizvodi' => \App\Http\Resources\ProizvodResource::collection($this->whenLoaded('proizvodi')),
             'ponude' => \App\Http\Resources\PonudaResource::collection($this->whenLoaded('ponude')),
-            'moja_najvisa_ponuda_iznos' => $this->when($mojaNajvisaPonudaIznos !== null, $mojaNajvisaPonudaIznos),
+            'moja_najvisa_ponuda_iznos' => 
+                $this->when($mojaNajvisaPonudaIznos !== null, $mojaNajvisaPonudaIznos),
         ];
     }
 }

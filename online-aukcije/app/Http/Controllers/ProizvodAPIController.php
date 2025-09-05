@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Aukcija;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ProizvodResource;
-
+//PROVERI
 class ProizvodAPIController extends Controller
 {
     /**
@@ -36,7 +36,7 @@ class ProizvodAPIController extends Controller
                 'success' => false,
                 'message' => 'Greška pri validaciji.',
                 'errors' => $validator->errors()
-            ], 400); // Bad request
+            ], 400);
         }
 
         $proizvod = $aukcija->proizvodi()->create($request->all());
@@ -45,7 +45,7 @@ class ProizvodAPIController extends Controller
             'success' => true,
             'message' => 'Proizvod uspešno dodat aukciji.',
             'data' => new ProizvodResource($proizvod)
-        ], 201); //Created
+        ], 201);
     }
 
     /**
@@ -57,7 +57,7 @@ class ProizvodAPIController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji.'
-            ], 404); // Not Found
+            ], 404);
         }
         return new ProizvodResource($proizvod);
     }
@@ -71,7 +71,7 @@ class ProizvodAPIController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji, ne moze da se azurira.'
-            ], 404); // Not Found
+            ], 404);
         }
 
         $validator = Validator::make($request->all(), [
@@ -86,7 +86,7 @@ class ProizvodAPIController extends Controller
                 'success' => false,
                 'message' => 'Greška pri validaciji.',
                 'errors' => $validator->errors()
-            ], 400); // Bad Request
+            ], 400);
         }
 
         $proizvod->update($request->all());
@@ -95,7 +95,7 @@ class ProizvodAPIController extends Controller
             'success' => true,
             'message' => 'Proizvod uspešno ažuriran.',
             'data' => new ProizvodResource($proizvod)
-        ], 200); // OK
+        ], 200);
     
     }
 
@@ -108,7 +108,7 @@ class ProizvodAPIController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Proizvod ne pripada datoj aukciji, ne može se obrisati u ovom kontekstu.'
-            ], 404); // Not Found
+            ], 404);
         }
 
         $proizvod->delete();
@@ -116,7 +116,7 @@ class ProizvodAPIController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Proizvod uspešno obrisan.'
-        ], 204); // uspesno brisanje
+        ], 204);
     
     }
 }

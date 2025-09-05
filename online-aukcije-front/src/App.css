@@ -311,7 +311,7 @@ h1 {
   max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #bdbdbd;
+  background-color: #7bb9e2;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Inter', sans-serif;
@@ -585,13 +585,12 @@ h1 {
 }
 
 .auction-details-page {
-  max-width: 800px;
+  max-width: 900px;
   margin: 40px auto;
-  padding: 20px;
-  background-color: #a6c8de;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  line-height: 1.6;
+  padding: 30px;
+  background-color: #7bb9e2;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .auction-details-page h2 {
@@ -622,10 +621,10 @@ h1 {
   text-align: center;
   margin: 20px 0;
   padding: 15px;
-  background-color: #ecf0f1;
+  /*background-color: #ecf0f1;*/
+  background: radial-gradient(circle, #ffffff, #7bb9e2);
   border-radius: 8px;
 }
-
 .timer-area p {
   font-size: 1.2em;
   color: #34495e;

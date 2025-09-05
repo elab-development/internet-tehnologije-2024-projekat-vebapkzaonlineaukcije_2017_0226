@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const LoginPage = () => {
@@ -29,9 +29,8 @@ const LoginPage = () => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
 
       login(authToken, user);
-
-      console.log("Prijava uspesna:", response.data);
       navigate("/obavestenja");
+      //alert("Uspešno ste se prijavili");
     } catch (err) {
       console.error(
         "Doslo je do greske prilikom prijave:",

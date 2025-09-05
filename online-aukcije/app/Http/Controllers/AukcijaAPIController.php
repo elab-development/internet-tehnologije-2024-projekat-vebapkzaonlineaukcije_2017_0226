@@ -17,6 +17,7 @@ use App\Jobs\EndAuctionJob;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 
 class AukcijaAPIController extends Controller
 {
@@ -138,40 +139,70 @@ class AukcijaAPIController extends Controller
     public function update(Request $request, Aukcija $aukcija)
     {
         $validator = Validator::make($request->all(), [
-            'naziv' => 'string|max:255',
-            'pocetna_cena' => 'numeric|min:100|max:500000',
-            'datum_pocetka' => 'date_format:Y-m-d H:i:s|after_or_equal:now',
+            'naziv' => 'sometimes|required|string|max:255',
+            'pocetna_cena' => 'sometimes|required|numeric|min:100|max:500000',
+            'datum_pocetka' => 'sometimes|required|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'proizvodi' => 'sometimes|required|array|min:1',
+            'proizvodi.*.naziv' => 'required_with:proizvodi|string|max:255',
+            'proizvodi.*.opis' => 'required_with:proizvodi|string',
+            'proizvodi.*.kategorija' => 'required_with:proizvodi|string|max:255',
+            'proizvodi.*.stanje' => 'required_with:proizvodi|string|in:novo,kao novo,korisceno,osteceno',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greska pri validaciji.',
-                'errors' => $validator->errors()
-            ], 400);
-     }
-    
-        $validatedData = $validator->validated();
+            return response()->json(['success' => false, 
+            'message' => 'Greška pri validaciji.', 'errors' => $validator->errors()], 400);
+        }
+        
+        if ($aukcija->status_aukcije !== 'predstojeca') {
+            return response()->json(['success' => false, 
+            'message' => 'Aukcija se može menjati samo dok je u statusu "predstojeća".'], 403);
+        }
 
-        if (isset($validatedData['pocetna_cena']) && $aukcija->status_aukcije != 'predstojeca') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pocetna cena se može menjati samo pre pocetka aukcije.'
-            ], 403);
+        DB::beginTransaction();
+        try {
+            $updateData = $request->only(['naziv', 'pocetna_cena']);
+            $vremeJePromenjeno = false;
+
+            if ($request->has('datum_pocetka')) {
+                $noviDatumPocetka = $request->input('datum_pocetka');
+                $updateData['datum_pocetka'] = $noviDatumPocetka;
+
+                $trajanjeAukcije = 100;
+                $updateData['vreme_isteka'] = Carbon::parse($noviDatumPocetka)->addSeconds($trajanjeAukcije);
+                
+                $vremeJePromenjeno = true;
+            }
+
+            $aukcija->update($updateData);
+
+            if ($request->has('proizvodi')) {
+                $aukcija->proizvodi()->delete();
+                foreach ($request->input('proizvodi') as $productData) {
+                    $aukcija->proizvodi()->create($productData);
+                }
+            }
+
+            if ($vremeJePromenjeno) {
+                $startDateTime = Carbon::parse($aukcija->datum_pocetka);
+                $endDateTime = Carbon::parse($aukcija->vreme_isteka);
+
+                StartAuctionJob::dispatch($aukcija)->delay($startDateTime);
+                EndAuctionJob::dispatch($aukcija)->delay($endDateTime);
+            }
+            
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false,
+            'message' => 'Došlo je do greške na serveru prilikom izmene.', 'error' => $e->getMessage()], 500);
         }
-        if (isset($validatedData['datum_pocetka']) && $aukcija->status_aukcije != 'predstojeca') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Datum pocetka se može menjati samo pre pocetka aukcije.'
-            ], 403);
-        }
-    
-        $aukcija->update($validatedData);
 
         return response()->json([
             'success' => true,
             'message' => 'Aukcija uspešno ažurirana.',
-            'data' => new AukcijaResource($aukcija)
+            'data' => new AukcijaResource($aukcija->load('proizvodi'))
         ], 200);
     }
 

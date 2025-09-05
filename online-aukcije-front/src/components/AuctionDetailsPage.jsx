@@ -34,21 +34,6 @@ const AuctionDetailsPage = () => {
       );
 
       setAukcija(response.data.data);
-      console.log(
-        "fetchAukcijaDetails: Aukcija dohvaćena.",
-        response.data.data
-      );
-
-      if (response.data.data.moja_najvisa_ponuda_iznos) {
-        console.log(
-          "fetchAukcijaDetails: moja_najvisa_ponuda_iznos je prisutan:",
-          response.data.data.moja_najvisa_ponuda_iznos
-        );
-      } else {
-        console.log(
-          "fetchAukcijaDetails: moja_najvisa_ponuda_iznos NIJE prisutan."
-        );
-      }
     } catch (err) {
       if (
         err.response &&
@@ -142,6 +127,11 @@ const AuctionDetailsPage = () => {
     }
   };
 
+  const getImageUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith("http") ? url : `http://localhost:8000${url}`;
+  };
+
   return (
     <div className="auction-details-page">
       <h2>{aukcija.naziv}</h2>
@@ -215,7 +205,7 @@ const AuctionDetailsPage = () => {
           </p>
           {proizvod.slika_url && (
             <img
-              src={`http://localhost:8000${proizvod.slika_url}`}
+              src={getImageUrl(proizvod.slika_url)}
               alt={proizvod.naziv}
               style={{ width: "300px" }}
             />

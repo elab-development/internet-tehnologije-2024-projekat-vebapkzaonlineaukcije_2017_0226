@@ -42,7 +42,6 @@ const PonudaForm = ({ aukcijaId, onBidSuccess, aukcija }) => {
           },
         }
       );
-      console.log("Odgovor sa servera:", response.data);
 
       const updatedAukcija = response?.data?.data?.aukcija;
 

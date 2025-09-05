@@ -76,7 +76,8 @@ class PonudaAPIController extends Controller
                 ], 409);
             }
 
-            $minimalniIznosSvezeAukcije = $svezaAukcija->trenutna_cena ? $svezaAukcija->trenutna_cena + 100 : $svezaAukcija->pocetna_cena;
+            $minimalniIznosSvezeAukcije = $svezaAukcija->trenutna_cena 
+            ? $svezaAukcija->trenutna_cena + 100 : $svezaAukcija->pocetna_cena;
             if ($validatedData['iznos'] < $minimalniIznosSvezeAukcije) {
                 DB::rollBack();
                 return response()->json([

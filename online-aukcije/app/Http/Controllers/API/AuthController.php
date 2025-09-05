@@ -111,9 +111,4 @@ class AuthController extends Controller
             'message' => 'Uspešno ste se odjavili.'
         ], 200);
     }
-
-
-
-
-
 }

@@ -157,6 +157,7 @@ const MyAuctions = () => {
       setShowCreateModal(false);
       resetForms();
       triggerAuctionUpdate();
+      //alert("Uspešno sačuvana aukcija");
     } catch (err) {
       console.error(
         "Greška pri kreiranju aukcije:",
@@ -202,6 +203,7 @@ const MyAuctions = () => {
       setSelectedAuction(null);
       resetForms();
       triggerAuctionUpdate();
+      //alert("Uspešno izmenjena aukcija");
     } catch (err) {
       console.error(
         "Greška pri izmeni aukcije:",
@@ -263,6 +265,7 @@ const MyAuctions = () => {
           },
         }
       );
+      //alert("Aukcija je uspešno obrisana");
       setShowDeleteConfirm(false);
       setAuctionToDeleteId(null);
       triggerAuctionUpdate();

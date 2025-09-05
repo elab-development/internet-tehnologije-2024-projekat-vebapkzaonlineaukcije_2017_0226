@@ -16,8 +16,6 @@ class NotificationController extends Controller
         }
 
         $notifications = $korisnik->notifications;
-        $korisnik->unreadNotifications->markAsRead();
-
         return new JsonResource($notifications);
     }
 }

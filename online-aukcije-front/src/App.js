@@ -1,7 +1,6 @@
-import logo from "./logo.svg";
 import "./App.css";
 import HomePage from "./components/HomePage";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RegisterPage from "./components/RegisterPage";
 import LoginPage from "./components/LoginPage";
 import Navbar from "./components/Navbar";
