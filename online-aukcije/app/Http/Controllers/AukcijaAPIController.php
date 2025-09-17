@@ -141,7 +141,6 @@ class AukcijaAPIController extends Controller
         $validator = Validator::make($request->all(), [
             'naziv' => 'sometimes|required|string|max:255',
             'pocetna_cena' => 'sometimes|required|numeric|min:100|max:500000',
-            'datum_pocetka' => 'sometimes|required|date_format:Y-m-d H:i:s|after_or_equal:now',
             'proizvodi' => 'sometimes|required|array|min:1',
             'proizvodi.*.naziv' => 'required_with:proizvodi|string|max:255',
             'proizvodi.*.opis' => 'required_with:proizvodi|string',
@@ -162,17 +161,6 @@ class AukcijaAPIController extends Controller
         DB::beginTransaction();
         try {
             $updateData = $request->only(['naziv', 'pocetna_cena']);
-            $vremeJePromenjeno = false;
-
-            if ($request->has('datum_pocetka')) {
-                $noviDatumPocetka = $request->input('datum_pocetka');
-                $updateData['datum_pocetka'] = $noviDatumPocetka;
-
-                $trajanjeAukcije = 100;
-                $updateData['vreme_isteka'] = Carbon::parse($noviDatumPocetka)->addSeconds($trajanjeAukcije);
-                
-                $vremeJePromenjeno = true;
-            }
 
             $aukcija->update($updateData);
 
@@ -181,14 +169,6 @@ class AukcijaAPIController extends Controller
                 foreach ($request->input('proizvodi') as $productData) {
                     $aukcija->proizvodi()->create($productData);
                 }
-            }
-
-            if ($vremeJePromenjeno) {
-                $startDateTime = Carbon::parse($aukcija->datum_pocetka);
-                $endDateTime = Carbon::parse($aukcija->vreme_isteka);
-
-                StartAuctionJob::dispatch($aukcija)->delay($startDateTime);
-                EndAuctionJob::dispatch($aukcija)->delay($endDateTime);
             }
             
             DB::commit();
@@ -219,39 +199,6 @@ class AukcijaAPIController extends Controller
             'success' => true,
             'message' => 'Aukcija uspešno obrisana.'
         ], 204); // No Content
-    }
-
-    public function pretragaPoKategoriji(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'kategorija' => 'required|string|max:255', 
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greška pri validaciji parametra za kategoriju.',
-                'errors' => $validator->errors()
-            ], 400); // Bad Request
-        }
-
-        $nazivKategorije = $request->input('kategorija');
-
-        $aukcije = Aukcija::whereHas('proizvodi', function ($query) use ($nazivKategorije) {
-            $query->where('kategorija', $nazivKategorije);
-        })->get();
-
-        $nazivKategorije = $request->input('kategorija');      
-
-        if ($aukcije->isEmpty()) {
-            return response()->json([
-                'success' => true, 
-                'message' => 'Nema aukcija sa proizvodima u kategoriji "' . $nazivKategorije . '".',
-                'data' => []
-            ], 200); // OK
-        }
-
-        return AukcijaResource::collection($aukcije);
     }
 
     public function korisnickeAukcije(Korisnik $korisnik)

@@ -26,8 +26,8 @@ const MyProfile = () => {
           },
         });
 
-        setUserData(response.data);
-        setFormData(response.data);
+        setUserData(response.data.data);
+        setFormData(response.data.data);
       } catch (err) {
         console.error("Greska pri citanju podataka:", err);
         setError("Nismo uspeli da ucitamo podatke. Pokusajte ponovo.");

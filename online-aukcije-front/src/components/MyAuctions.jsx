@@ -534,6 +534,7 @@ const MyAuctions = () => {
                 value={auctionFormData.datum_pocetka}
                 onChange={handleAuctionFormChange}
                 required
+                disabled
               />
 
               <label>Vreme Početka:</label>
@@ -543,6 +544,7 @@ const MyAuctions = () => {
                 value={auctionFormData.vreme_pocetka}
                 onChange={handleAuctionFormChange}
                 required
+                disabled
               />
 
               <h3>Proizvodi u Aukciji</h3>

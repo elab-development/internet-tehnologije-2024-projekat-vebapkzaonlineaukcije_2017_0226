@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Http\Resources\KorisnikResource;
 
 class KorisnikAPIController extends Controller
 {
@@ -16,8 +17,7 @@ class KorisnikAPIController extends Controller
             return response()->json(['message' => 'Niste autorizovani.'], 401);
         }
 
-        
-        return response()->json($korisnik, 200);
+        return new KorisnikResource($korisnik);
     }
 
     public function update(Request $request)
@@ -39,7 +39,7 @@ class KorisnikAPIController extends Controller
 
             return response()->json([
                 'message' => 'Podaci su uspesno azurirani.',
-                'korisnik' => $korisnik
+                'korisnik' => new KorisnikResource($korisnik)
             ], 200);
 
         } catch (ValidationException $e) {

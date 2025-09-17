@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use App\Http\Resources\KorisnikResource;
 
 
 class AuthController extends Controller
@@ -49,7 +50,7 @@ class AuthController extends Controller
         return response()
 		->json(['success'=> true,
                 'message'=> "Registracija je uspesna",
-                'data' => $korisnik,
+                'data' => new KorisnikResource($korisnik),
                 'access_token' => $token,
                 'token_type' => 'Bearer'], 201);
     }
@@ -87,7 +88,7 @@ class AuthController extends Controller
             ->json([
                 'success' => true,
                 'message' => 'Uspešno ste se ulogovali, ' . $korisnik->ime . '.',
-                'data' => $korisnik,
+                'data' => new KorisnikResource($korisnik),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ], 200);
