@@ -177,22 +177,30 @@ const MyAuctions = () => {
     setError(null);
     if (!selectedAuction) return;
 
-    const timeWithSeconds = auctionFormData.vreme_pocetka
-      ? `${auctionFormData.vreme_pocetka}:00`
-      : "00:00:00";
-    const fullDateTime = `${auctionFormData.datum_pocetka} ${timeWithSeconds}`;
+    const formData = new FormData();
+    formData.append("_method", "PATCH");
+    formData.append("naziv", auctionFormData.naziv);
+    formData.append("pocetna_cena", auctionFormData.pocetna_cena);
+
+    productFormsData.forEach((product, index) => {
+      formData.append(`proizvodi[${index}][naziv]`, product.naziv);
+      formData.append(`proizvodi[${index}][opis]`, product.opis);
+      formData.append(`proizvodi[${index}][kategorija]`, product.kategorija);
+      formData.append(`proizvodi[${index}][stanje]`, product.stanje);
+
+      if (product.slika) {
+        formData.append(`proizvodi[${index}][slika]`, product.slika);
+      } else if (product.slika_url) {
+        formData.append(`proizvodi[${index}][slika_url]`, product.slika_url);
+      }
+    });
 
     try {
       const authToken = localStorage.getItem("authToken");
-      const payload = {
-        ...auctionFormData,
-        datum_pocetka: fullDateTime,
-        proizvodi: productFormsData.filter((product) => product.naziv),
-      };
 
-      await axios.patch(
+      await axios.post(
         `http://localhost:8000/api/aukcije/${selectedAuction.id}`,
-        payload,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,

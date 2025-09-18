@@ -146,6 +146,7 @@ class AukcijaAPIController extends Controller
             'proizvodi.*.opis' => 'required_with:proizvodi|string',
             'proizvodi.*.kategorija' => 'required_with:proizvodi|string|max:255',
             'proizvodi.*.stanje' => 'required_with:proizvodi|string|in:novo,kao novo,korisceno,osteceno',
+            'proizvodi.*.slika' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -166,7 +167,15 @@ class AukcijaAPIController extends Controller
 
             if ($request->has('proizvodi')) {
                 $aukcija->proizvodi()->delete();
-                foreach ($request->input('proizvodi') as $productData) {
+                foreach ($request->input('proizvodi') as $index => $productData) {
+                    
+                    if ($request->hasFile("proizvodi.{$index}.slika")) {
+                        $productFile = $request->file("proizvodi.{$index}.slika");
+                        $path = $productFile->store('proizvodi', 'public');
+                        $productData['slika_url'] = Storage::url($path);
+                    } else {
+                        $productData['slika_url'] = $productData['slika_url'] ?? null;
+                    }
                     $aukcija->proizvodi()->create($productData);
                 }
             }
