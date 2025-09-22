@@ -40,10 +40,6 @@ class PonudaAPIController extends Controller
         $rules = [
             'iznos' => 'required|numeric|gte:' . $minimalniIznos . '|lte:' . $korisnik->stanje_na_racunu,
         ];
-    
-        if ($aukcija->maksimalna_cena !== null) {
-            $rules['iznos'] .= '|lte:' . $aukcija->maksimalna_cena;
-        }
 
         $messages = [
             'iznos.gte' => 'Ponuda mora biti veća od trenutne cene.',
